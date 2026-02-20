@@ -1,0 +1,2981 @@
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+		<title>Zip Inventory - iPhone 17 Pro Showcase</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+			
+			:root {
+				--iphone-radius: 55px;
+				--safe-top: 44px;
+				--safe-bottom: 34px;
+				--brand-dark: #333745;
+				--brand-blue: #3b82f6;
+			}
+
+			body {
+				font-family: 'Plus Jakarta Sans', sans-serif;
+				background-color: #e5e7eb;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.iphone-17-pro {
+				position: relative;
+				width: 393px;
+				height: 852px;
+				background: #111;
+				border-radius: var(--iphone-radius);
+				box-shadow: 0 50px 100px -20px rgba(0,0,0,0.3), inset 0 0 4px 2px rgba(255,255,255,0.1);
+				border: 12px solid #222;
+				overflow: hidden;
+				flex-shrink: 0;
+			}
+
+			.dynamic-island {
+				position: absolute;
+				top: 15px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 120px;
+				height: 35px;
+				background: #000;
+				border-radius: 20px;
+				z-index: 7000;
+			}
+
+			.screen {
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				background: #f8fafc;
+				overflow-y: auto;
+				overflow-x: hidden;
+				border-radius: calc(var(--iphone-radius) - 12px);
+				scrollbar-width: none;
+				padding-bottom: 120px;
+			}
+			.screen::-webkit-scrollbar { display: none; }
+
+			/* Sidebar State */
+			#sidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 6500; }
+			#sidebar.closed { transform: translateX(-100%); }
+			#sidebar-overlay { transition: opacity 0.3s ease; z-index: 6400; }
+			#sidebar-overlay.hidden { opacity: 0; pointer-events: none; }
+
+			/* Modal Styles */
+			#modal-container { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 6800; }
+			#modal-container.hidden-modal { transform: translateY(100%); }
+			
+			#success-modal { transition: opacity 0.3s ease; z-index: 6900; }
+
+			.modal-overlay {
+				background: rgba(0, 0, 0, 0.5);
+				backdrop-filter: blur(4px);
+				z-index: 6700;
+			}
+
+			.header-bg {
+				background: var(--brand-dark);
+				backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(255,255,255,0.05);
+			}
+
+			/* Paytm Style FAB */
+			/* FAB Position and Visibility Correction */
+#paytm-fab {
+    position: absolute;
+    /* Bottom se 85px upar rakha hai taaki safe area maintain rahe */
+    bottom: 85px !important; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    /* Iska z-index sabse zyada rakha hai taaki ye kisi card ke piche na chhup jaye */
+    z-index: 9999 !important; 
+    border: 4px solid white;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#paytm-fab:active {
+    transform: translateX(-50%) scale(0.9);
+}
+
+			.btn-bounce { transition: transform 0.2s; }
+			.btn-bounce:active { transform: scale(0.95); }
+
+			/* Progress Bar */
+			.progress-bg { background: #f1f5f9; height: 6px; border-radius: 10px; width: 100%; position: relative; }
+			.progress-fill { background: #f43f5e; height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+
+			.screen-fade-in { animation: fadeIn 0.4s ease; }
+			@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+			.alert-category-header {
+				font-size: 9px;
+				font-weight: 800;
+				text-transform: uppercase;
+				color: #4f46e5;
+				background: #f1f5f9;
+				padding: 6px 16px;
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			/* Sidebar Purple Headers */
+			.sidebar-section-title {
+				color: #a855f7;
+				font-weight: 900;
+				text-transform: uppercase;
+				font-size: 10px;
+				letter-spacing: 0.1em;
+				padding-left: 28px;
+				margin-bottom: 4px;
+			}
+
+			.sub-menu-container {
+				margin-left: 45px;
+				border-left: 1px solid #e2e8f0;
+				max-height: 0;
+				overflow: hidden;
+				transition: max-height 0.3s ease-out;
+			}
+			.sub-menu-container.open { max-height: 300px; }
+			.sub-item { position: relative; padding: 10px 15px; }
+			.sub-item::before { content: ""; position: absolute; left: 0; top: 50%; width: 10px; height: 1px; background: #e2e8f0; }
+			
+			.chevron { transition: transform 0.3s ease; }
+			.chevron.rotate { transform: rotate(90deg); }
+
+			.toggle-group { display: flex; background: #f1f5f9; padding: 2px; border-radius: 10px; }
+			.toggle-btn { padding: 4px 10px; font-size: 9px; font-weight: 800; border-radius: 8px; cursor: pointer; }
+			.toggle-btn.active { background: #fff; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+			.toggle-btn.inactive { color: #94a3b8; }
+
+			/* Finalize Button Locked at Bottom */
+			.finalize-btn-fixed {
+		position: absolute;
+		bottom: 30px;
+		left: 50%;
+		transform: translateX(-50%);
+		/* Width kam karke 75% ki gayi hai taaki button chota dikhe */
+		width: 75%; 
+		background: var(--brand-blue);
+		color: white;
+		font-size: 14px; /* Font size thoda chota kiya gaya hai */
+		font-weight: 800;
+		/* Vertical padding kam ki gayi hai (18px -> 14px) */
+		padding: 14px; 
+		border-radius: 20px; /* Radius ko thoda sharp kiya gaya hai */
+		text-align: center;
+		box-shadow: 0 8px 15px rgba(59, 130, 246, 0.25);
+		z-index: 2500;
+		border: none;
+		cursor: pointer;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+			.inventory-card {
+				background: white;
+				padding: 18px;
+				border-radius: 24px;
+				border: 1px solid #f1f5f9;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+			}
+
+			/* Chart Center Highlight Color */
+			#center-val { transition: color 0.3s ease; }
+			
+			/* Success Pop-up Refined Styles */
+	.success-box {
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+		border-radius: 40px;
+		width: 320px;
+		text-align: center;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+
+	.check-circle {
+		width: 64px; /* Reduced from 80px */
+		height: 64px; /* Reduced from 80px */
+		background: #10b981;
+		border: 4px solid #fff; /* Thinner border */
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 20px; /* Removed negative top margin to keep it inside */
+		box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2);
+	}
+
+	.ok-btn {
+		background: #3b82f6;
+		color: white;
+		font-weight: 800;
+		padding: 16px;
+		border-radius: 20px;
+		width: 100%;
+		box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);
+	}
+	/* Swipe Action Container */
+	.swipe-container {
+		position: relative;
+		overflow: hidden;
+		border-radius: 24px;
+	}
+
+	/* Action Buttons (Behind the card) */
+	.swipe-actions {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0 15px;
+		z-index: 1;
+	}
+
+	.action-btn {
+		width: 45px;
+		height: 45px;
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		font-size: 16px;
+	}
+
+	/* Actual Card that slides */
+	.inventory-card-swipe {
+		position: relative;
+		z-index: 2;
+		background: white;
+		transition: transform 0.3s ease;
+	}
+
+	/* Swipe simulation on hover/active */
+	.swipe-container:active .inventory-card-swipe {
+		transform: translateX(0); /* Default */
+	}
+
+	/* Status Pill Styles */
+	.status-pill {
+		font-size: 8px;
+		font-weight: 800;
+		padding: 2px 8px;
+		border-radius: 20px;
+		text-transform: uppercase;
+	}
+	.status-finalized { background: #ecfdf5; color: #10b981; }
+	.status-unfinalized { background: #fff7ed; color: #f59e0b; }
+
+	/* Premium Card Upgrade */
+	.storage-card-premium {
+		background: white;
+		border-radius: 20px;
+		padding: 16px;
+		margin-bottom: 12px;
+		border: 1px solid rgba(226, 232, 240, 0.6);
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+		transition: all 0.2s ease;
+		border-left: 4px solid #e2e8f0; /* Default neutral border */
+	}
+
+	.storage-card-premium:active {
+		transform: scale(0.98);
+		background: #f8fafc;
+	}
+
+	/* Color accents based on progress */
+	.card-in-progress { border-left-color: #3b82f6; }
+	.card-empty { border-left-color: #f1f5f9; }
+
+	/* Glowing Progress Bar */
+	.progress-glow {
+		box-shadow: 0 0 8px rgba(244, 63, 94, 0.3);
+	}
+
+	/* Glassmorphism for Sub-Tabs */
+	.glass-tabs {
+		background: rgba(51, 55, 69, 0.95);
+		backdrop-filter: blur(8px);
+		position: sticky;
+		top: 64px; /* Adjust based on your header height */
+		z-index: 40;
+	}
+
+	/* Tab Header as a Pill */
+	.tab-pill-container {
+		background: #f1f5f9;
+		padding: 4px;
+		border-radius: 99px;
+		display: flex;
+		margin: 12px 20px;
+		border: 1px solid #e2e8f0;
+	}
+
+	.tab-btn {
+		flex: 1;
+		padding: 10px;
+		border-radius: 99px;
+		font-size: 10px;
+		font-weight: 800;
+		text-transform: uppercase;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		transition: all 0.2s ease;
+	}
+
+	.tab-btn.active {
+		background: white;
+		color: #4f46e5;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+	}
+
+	.tab-btn.inactive {
+		color: #94a3b8;
+	}
+
+	/* Reduced Calendar Width */
+	.calendar-compact {
+		max-width: 180px; /* Width kam ki gayi hai */
+		margin: 0 auto;
+	}
+
+	/* Toggle Switch Design */
+	.view-toggle {
+		display: flex;
+		background: #f1f5f9;
+		padding: 3px;
+		border-radius: 12px;
+		margin: 0 auto 15px;
+		width: fit-content;
+	}
+	.toggle-option {
+		padding: 6px 16px;
+		font-size: 11px;
+		font-weight: 800;
+		border-radius: 10px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+	.toggle-option.active {
+		background: white;
+		color: #4f46e5;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	}
+
+	/* Swipe View Container */
+	.swipe-mode-container {
+		display: none; /* By default hidden */
+		height: 60vh;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Fix for Item List cutting */
+	#list-mode {
+		padding-top: 5px; /* Subtle buffer */
+		scrollbar-width: none;
+	}
+	#list-mode::-webkit-scrollbar { display: none; }
+
+	/* Ensure Toggle Switch is visible and centered */
+	.view-toggle {
+		display: flex;
+		background: #f1f5f9;
+		padding: 4px;
+		border-radius: 14px;
+		width: 200px;
+		margin: 0 auto;
+	}
+	/* Search bar icon container fix */
+	.search-icon-btn {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		color: #94a3b8;
+		cursor: pointer;
+		transition: color 0.2s;
+	}
+	.search-icon-btn:hover { color: #4f46e5; }
+
+	/* Compact Search Bar Container */
+	.search-wrapper {
+		display: flex;
+		align-items: center;
+		background: white;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 0 12px;
+		height: 38px; /* Height fix ki gayi hai */
+		box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+	}
+
+	.search-input-compact {
+		flex: 1;
+		border: none;
+		outline: none;
+		font-size: 12px;
+		font-weight: 500;
+		padding: 0 8px;
+		width: 100%;
+	}
+
+	.search-actions-group {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding-left: 12px;
+		border-left: 1px solid #f1f5f9;
+		color: #94a3b8;
+	}
+
+	.search-action-btn {
+		background: none;
+		border: none;
+		padding: 0;
+		font-size: 14px;
+		color: #64748b;
+		cursor: pointer;
+	}
+	#count-bottom-sheet {
+		position: absolute; /* Relative to iPhone frame */
+		bottom: 0;
+		left: 0;
+		right: 0;
+		width: 100% !important; /* Full width inside frame */
+		max-width: 100% !important;
+		background: white;
+		border-radius: 32px 32px 0 0;
+		transform: translateY(100%);
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		z-index: 8001;
+		overflow: hidden;
+	}
+
+	.close-modal-btn {
+		background: rgba(255, 255, 255, 0.15);
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
+		outline: none;
+	}
+
+	.close-modal-btn:active {
+		transform: scale(0.9);
+		background: rgba(255, 255, 255, 0.3);
+	}
+
+	/* Unit card spacing fix */
+	.unit-row-card {
+		background: #f8fafc;
+		border: 1px solid #f1f5f9;
+		border-radius: 20px;
+		padding: 10px 16px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+	}
+	.modal-img-box {
+		width: 120px;
+		height: 120px;
+		border-radius: 24px;
+		border: 4px solid white;
+		box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+		overflow: hidden;
+		margin: 0 auto;
+	}
+
+	/* Modal and Overlay scoping */
+	#count-modal-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(0,0,0,0.5);
+		backdrop-filter: blur(2px);
+		z-index: 8000;
+		display: none;
+		opacity: 0;
+	}
+
+	/* Chrome/Safari se number input ke arrows hatane ke liye */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+	  -webkit-appearance: none;
+	  margin: 0;
+	}
+
+	/* Card Height aur Scrolling Fix */
+	#swipe-mode {
+		height: calc(100% - 140px); /* Header aur Footer ke liye jagah */
+		overflow-y: auto;
+		padding-top: 10px;
+		padding-bottom: 30px;
+	}
+
+	/* Unit rows ki spacing fix */
+	.unit-card {
+		background: #f8fafc;
+		border: 1px solid #f1f5f9;
+		border-radius: 18px;
+		padding: 12px 16px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px;
+	}
+
+	/* Footer alignment (Inventory Value & Count) */
+	.swipe-footer-summary {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-top: 1px solid #f1f5f9;
+		padding-top: 15px;
+		margin-top: 10px;
+	}
+
+	@keyframes slideUp {
+	  from { transform: translateY(100%); }
+	  to { transform: translateY(0); }
+	}
+
+	.animate-slide-up {
+	  animation: slideUp 0.3s ease;
+	}
+/* Status Bar Styles */
+.status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 7500;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.status-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Adjust header to sit below status bar if needed */
+header.sticky {
+    padding-top: 50px !important;
+}
+
+/* Custom Select Style */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Adjust dashboard spacing for new bar */
+#screen-dashboard main {
+    padding-top: 5px;
+}
+
+/* Refined Variance Card */
+.variance-card {
+    background: white;
+    border-radius: 24px;
+    padding: 16px; /* Reduced from 20px */
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+    margin-bottom: 12px; /* Reduced spacing between cards */
+}
+
+/* Compact Metric Grid */
+.metric-box {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+}
+
+.metric-label {
+    font-size: 8px; /* Slightly smaller for better fit */
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+}
+
+.metric-value {
+    font-size: 12px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+/* Centered Date Pill */
+.date-pill-display {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 8px 20px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 0 auto; /* Center alignment */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+/* Padding optimization for Variance Tab */
+.variance-container {
+    padding-top: 4px; /* Tab pill ke niche minimal space */
+}
+
+/* Ingredient Drill-down Card */
+.ingredient-card {
+    background: white;
+    border-radius: 20px;
+    padding: 14px;
+    border: 1px solid #f1f5f9;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.usage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 14px;
+}
+
+.usage-item {
+    text-align: center;
+}
+
+.usage-label {
+    font-size: 7px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.usage-value {
+    font-size: 11px;
+    font-weight: 800;
+    color: #334155;
+}
+
+/* Ingredient Screen Layout Fix */
+#screen-ingredient-detail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f8fafc;
+    z-index: 5000; /* Header ke niche par cards ke upar */
+}
+}
+
+/* Filter & Date Picker Modals */
+.modal-bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 40px 40px 0 0;
+    z-index: 9500;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: 40px;
+}
+.modal-bottom-sheet.open { transform: translateY(0); }
+
+.filter-chip {
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid #f1f5f9;
+    background: #f8fafc;
+    color: #64748b;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.filter-chip.selected {
+    background: #4f46e5;
+    color: white;
+    border-color: #4f46e5;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.date-input-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+#swipe-card-container {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Padding optimization for Variance Details */
+.variance-table td {
+    padding: 8px 16px !important; /* Standard padding ko kam kiya gaya */
+}
+.variance-table tr.header-row td {
+    padding: 4px 16px !important;
+}
+.accordion-header {
+    padding: 10px 20px !important; /* Expandable headers ki height kam ki */
+}
+.analysis-header {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+		</style>
+	</head>
+	<body class="antialiased">
+
+		<div class="iphone-17-pro">
+			<div class="dynamic-island"></div>
+			
+			<!-- Sidebar Backdrop -->
+			<div id="sidebar-overlay" class="absolute inset-0 bg-black/50 hidden" onclick="toggleSidebar()"></div>
+			
+			<!-- Modal Backdrop -->
+			<div id="modal-overlay" class="absolute inset-0 modal-overlay hidden" onclick="toggleModal()"></div>
+			
+			<div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <div class="battery-icon flex items-center">
+                <span class="text-[9px] mr-1">100%</span>
+                <i class="fas fa-battery-full text-lg"></i>
+            </div>
+        </div>
+    </div>
+
+			<!-- TAKE INVENTORY MODAL -->
+			<div id="modal-container" class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[40px] shadow-2xl hidden-modal h-[72%] flex flex-col">
+				<div class="header-bg px-6 py-6 rounded-t-[40px] flex justify-between items-center">
+					<button onclick="toggleModal()" class="text-white opacity-70"><i class="fas fa-chevron-left"></i></button>
+					<h2 class="text-white font-extrabold text-[13px] uppercase tracking-widest">Take Inventory</h2>
+					<div class="w-4"></div>
+				</div>
+				<div class="p-8 flex-1 flex flex-col items-center text-center space-y-6">
+		<p class="text-slate-400 text-sm font-semibold leading-relaxed px-4">Please select your count frequency and date to proceed with taking the inventory.</p>
+		
+		<div class="w-full space-y-2 text-left">
+			<label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Choose Count Frequency</label>
+			<select class="w-full bg-white border border-slate-200 rounded-2xl p-4 text-slate-600 font-bold focus:border-indigo-500 outline-none appearance-none">
+				<option>Daily</option><option>Weekly</option><option>Period</option>
+			</select>
+		</div>
+
+		<div class="w-full space-y-2 text-left">
+			<label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Choose Date</label>
+			<div class="flex items-center gap-2">
+				<button class="w-12 h-12 border border-slate-200 rounded-xl flex items-center justify-center text-slate-400"><i class="fas fa-chevron-left text-xs"></i></button>
+				<div class="flex-1 border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-3 text-slate-600 font-bold text-sm">
+					<i class="fas fa-calendar-alt text-indigo-500"></i>
+					<span>Feb 17 '26</span>
+					<i class="fas fa-caret-down text-indigo-300"></i>
+				</div>
+				<button class="w-12 h-12 border border-slate-200 rounded-xl flex items-center justify-center text-slate-400"><i class="fas fa-chevron-right text-xs"></i></button>
+			</div>
+		</div>
+
+		<div class="w-full pt-4">
+			<button class="w-full bg-[#10b981] text-white font-black py-4 rounded-2xl shadow-lg uppercase btn-bounce" onclick="proceedToSuccess()">Proceed</button>
+		</div>
+	</div>
+			</div>
+
+			<!-- SUCCESS POP-UP -->
+			<div id="success-modal" class="absolute inset-0 flex items-center justify-center hidden" style="z-index: 8000;">
+		<div class="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
+		<div class="success-box relative p-8">
+			<div class="check-circle">
+				<i class="fas fa-check text-3xl text-white"></i>
+			</div>
+			<div class="mb-8">
+				<h3 class="text-2xl font-black text-slate-800 tracking-tight">Inventory Added</h3>
+				<p class="text-slate-500 text-sm mt-2 font-medium">Ready to start counting items.</p>
+			</div>
+			<button onclick="finishAdding()" class="ok-btn btn-bounce uppercase tracking-wider">OK</button>
+		</div>
+	</div>
+
+	<!-- ITEM PREVIEW MODAL -->
+	<div id="item-preview-modal" class="hidden fixed inset-0 bg-black/40 flex items-end">
+
+	  <div class="bg-white w-full rounded-t-3xl p-5">
+
+		<h3 id="preview-title" class="font-bold text-lg">
+		  Item Name
+		</h3>
+
+		<div class="flex justify-center my-4">
+		  <img id="preview-img"
+			   src=""
+			   class="w-32 h-32 rounded-xl object-cover">
+		</div>
+
+		<button onclick="closePreviewModal()"
+				class="w-full bg-indigo-600 text-white py-3 rounded-xl">
+		  Close
+		</button>
+
+	  </div>
+
+	</div>
+
+
+
+			<!-- Sidebar Navigation (COMPLETE) -->
+			<aside id="sidebar" class="absolute top-0 left-0 w-[85%] h-full bg-white closed flex flex-col shadow-2xl">
+				<div class="bg-[#333745] text-white p-6 pt-16">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="w-14 h-14 rounded-full bg-[#10b981] flex items-center justify-center text-xl font-bold">SA</div>
+						<div>
+							<h3 class="font-bold text-lg leading-tight">Shoaib A</h3>
+							<p class="text-[11px] text-gray-400 opacity-80 mt-0.5">ashoib@altametrics.com</p>
+							<div class="flex items-start gap-1 mt-2">
+								<div class="w-0.5 h-6 bg-indigo-400 rounded-full mt-0.5"></div>
+								<div><p class="text-[10px] text-indigo-300 font-bold uppercase">Little Caesars Canada</p><p class="text-[10px] text-gray-400 font-medium">814</p></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="flex-1 overflow-y-auto py-2 bg-[#fcfcfd]">
+					<div class="px-3 mb-4 mt-2"><button onclick="showScreen('dashboard')" class="w-full flex items-center gap-4 p-3 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-sm text-left"><i class="fas fa-house w-6 text-center"></i> Home</button></div>
+					<div class="mb-4"><h4 class="sidebar-section-title">Ordering</h4><button class="w-full flex items-center gap-4 px-7 py-3 hover:bg-slate-50 transition-colors font-semibold text-slate-700 text-sm"><i class="fas fa-file-invoice w-6 text-center text-slate-400"></i> Invoice</button></div>
+					<div class="mb-4">
+						<h4 class="sidebar-section-title">Inventory</h4>
+						<button onclick="showScreen('inventory')" class="w-full flex items-center gap-4 px-7 py-3 hover:bg-slate-50 font-semibold text-slate-700 text-sm"><i class="fas fa-clipboard-check w-6 text-center text-slate-400"></i> Inventory</button>
+						<button onclick="toggleAccordion('transfer-menu', 't-chev')" class="w-full flex items-center justify-between px-7 py-3 hover:bg-slate-50 font-semibold text-slate-700 text-sm">
+							<div class="flex items-center gap-4"><i class="fas fa-right-left w-6 text-center text-slate-400"></i> Transfer</div>
+							<i id="t-chev" class="fas fa-chevron-right text-[10px] text-slate-300 chevron"></i>
+						</button>
+						<div id="transfer-menu" class="sub-menu-container"><div class="sub-item text-xs font-medium text-slate-500">Transfer Out</div><div class="sub-item text-xs font-medium text-slate-500">Transfer In</div></div>
+					</div>
+					<div class="mb-4">
+						<h4 class="sidebar-section-title">Manage</h4>
+						<button onclick="toggleAccordion('emp-menu', 'e-chev')" class="w-full flex items-center justify-between px-7 py-3 hover:bg-slate-50 font-semibold text-slate-700 text-sm">
+							<div class="flex items-center gap-4"><i class="fas fa-users w-6 text-center text-slate-400"></i> Employees</div>
+							<i id="e-chev" class="fas fa-chevron-right text-[10px] text-slate-300 chevron"></i>
+						</button>
+						<div id="emp-menu" class="sub-menu-container"><div class="sub-item text-xs font-medium text-slate-500">Employees</div></div>
+					</div>
+					<div class="mb-4"><h4 class="sidebar-section-title">Reports</h4><button class="w-full flex items-center gap-4 px-7 py-3 font-semibold text-slate-700 text-sm"><i class="fas fa-chart-pie w-6 text-center text-slate-400"></i> GL COGS Report</button></div>
+					<div class="mb-4"><h4 class="sidebar-section-title">Communication</h4><button class="w-full flex items-center gap-4 px-7 py-3 font-semibold text-slate-700 text-sm"><i class="fas fa-comments w-6 text-center text-slate-400"></i> Chitchat</button></div>
+					<div class="mb-8"><h4 class="sidebar-section-title">My Account</h4><button class="w-full flex items-center gap-4 px-7 py-3 font-semibold text-slate-700 text-sm"><i class="fas fa-building w-6 text-center text-slate-400"></i> Organization</button></div>
+				</div>
+				<div class="border-t flex bg-slate-50"><button class="flex-1 py-5 text-sm font-bold text-slate-600 border-r"><i class="fas fa-gear mr-2"></i>Settings</button><button class="flex-1 py-5 text-sm font-bold text-rose-500"><i class="fas fa-right-from-bracket mr-2"></i>Logout</button></div>
+			</aside>
+
+			<!-- Main Wrapper -->
+			<div class="screen">
+				<!-- Header -->
+				<header class="sticky top-0 z-50 header-bg px-4 pb-4 pt-12">
+					<div class="flex justify-between items-center">
+						<div class="flex items-center gap-1.5">
+							<button id="hamburger-btn" onclick="toggleSidebar()" class="w-10 h-10 flex flex-col justify-center gap-1.5 btn-bounce">
+					<span class="w-6 h-0.5 bg-white rounded-full"></span>
+					<span class="w-4 h-0.5 bg-white rounded-full"></span>
+					<span class="w-6 h-0.5 bg-white rounded-full"></span>
+				</button>
+				
+				<button id="back-btn" onclick="showScreen('inventory')" class="w-10 h-10 hidden flex items-center justify-center text-white btn-bounce">
+					<i class="fas fa-chevron-left text-lg"></i>
+				</button>
+							<div class="flex items-center gap-2">
+								<div class="w-6 h-6 flex items-center justify-center text-white"><i class="fas fa-cube"></i></div>
+								<div>
+									<h1 id="screen-title" class="font-extrabold text-sm tracking-tighter leading-none text-white uppercase">ZIP INVENTORY</h1>
+									
+								</div>
+							</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<button class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-gray-200"><i class="far fa-comment-dots"></i></button>
+							<button class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-gray-200"><i class="fas fa-location-dot"></i></button>
+						</div>
+					</div>
+				</header>
+				
+				
+
+				<!-- 1. DASHBOARD SCREEN -->
+				<div id="screen-dashboard" class="screen-fade-in">
+    <main class="space-y-3 pb-32">
+        
+        <section class="px-5 pt-4">
+    <div class="bg-white border border-slate-100 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+        <div class="flex-1 relative">
+            <label class="text-[8px] font-black text-slate-400 uppercase absolute -top-1.5 left-2 bg-white px-1 z-10">Frequency</label>
+            <select class="w-full bg-slate-50 border-none rounded-xl py-2 px-3 text-[11px] font-bold text-slate-700 outline-none appearance-none cursor-pointer">
+                <option>Weekly</option>
+                <option>Daily</option>
+                <option>Monthly</option>
+            </select>
+            <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-indigo-400 text-[10px] pointer-events-none"></i>
+        </div>
+
+        <div class="flex-1 relative cursor-pointer" onclick="toggleCalendarModal(true)">
+            <label class="text-[8px] font-black text-slate-400 uppercase absolute -top-1.5 left-2 bg-white px-1 z-10">Select Date</label>
+            <div class="w-full bg-slate-50 rounded-xl py-2 px-3 text-[11px] font-bold text-slate-700 flex items-center justify-between">
+                <span id="dashboard-date-display">19-02-2026</span>
+                <i class="far fa-calendar-alt text-indigo-500 text-[12px]"></i>
+            </div>
+        </div>
+
+        <button class="bg-[#10b981] text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider active:scale-95 transition-all">
+            View
+        </button>
+    </div>
+</section>
+
+<div id="calendar-modal" class="hidden absolute inset-0 z-[10000] flex items-center justify-center p-6">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleCalendarModal(false)"></div>
+    <div class="bg-white w-full rounded-[32px] shadow-2xl relative overflow-hidden animate-slide-up">
+        <div class="bg-indigo-600 p-4 text-white flex justify-between items-center">
+            <h3 class="font-bold text-xs uppercase tracking-widest">Select Date</h3>
+            <button onclick="toggleCalendarModal(false)"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+            <input type="date" id="calendar-input" 
+                   class="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none"
+                   value="2026-02-19">
+            
+            <div class="grid grid-cols-2 gap-3 mt-6">
+                <button onclick="toggleCalendarModal(false)" class="py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-[10px] uppercase">Cancel</button>
+                <button onclick="applyDashboardDate()" class="py-3 rounded-xl bg-indigo-600 text-white font-bold text-[10px] uppercase shadow-lg shadow-indigo-100">Set Date</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <section class="grid grid-cols-3 gap-3 px-5 pt-1">
+    <div class="relative overflow-hidden bg-white border border-orange-100 p-3 rounded-[24px] shadow-[0_4px_20px_-4px_rgba(249,115,22,0.1)] active:scale-95 transition-transform">
+        <div class="absolute -right-2 -top-2 w-12 h-12 bg-orange-50 rounded-full opacity-50"></div>
+        <div class="relative z-10">
+            <div class="flex items-center gap-1.5 mb-1">
+                <div class="w-5 h-5 rounded-lg bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                    <i class="fas fa-chart-line text-[9px] text-white"></i>
+                </div>
+                <p class="text-[9px] font-extrabold text-orange-600 uppercase tracking-wider">Sales</p>
+            </div>
+            <h4 class="text-[13px] font-black text-slate-800 tracking-tight">$142.5K</h4>
+            <div class="mt-1 flex items-center gap-1">
+                <i class="fas fa-caret-up text-emerald-500 text-[8px]"></i>
+                <span class="text-[8px] font-bold text-emerald-500">+12%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative overflow-hidden bg-white border border-emerald-100 p-3 rounded-[24px] shadow-[0_4px_20px_-4px_rgba(16,185,129,0.1)] active:scale-95 transition-transform">
+        <div class="absolute -right-2 -top-2 w-12 h-12 bg-emerald-50 rounded-full opacity-50"></div>
+        <div class="relative z-10">
+            <div class="flex items-center gap-1.5 mb-1">
+                <div class="w-5 h-5 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-200">
+                    <i class="fas fa-boxes-stacked text-[9px] text-white"></i>
+                </div>
+                <p class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">INV $</p>
+            </div>
+            <h4 class="text-[13px] font-black text-slate-800 tracking-tight">$17.6K</h4>
+            <div class="mt-1 flex items-center gap-1 opacity-40">
+                <span class="text-[7px] font-extrabold text-slate-800 uppercase tracking-tighter">Current</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative overflow-hidden bg-white border border-rose-100 p-3 rounded-[24px] shadow-[0_4px_20px_-4px_rgba(244,63,94,0.1)] active:scale-95 transition-transform">
+    <div class="absolute -right-2 -top-2 w-12 h-12 bg-rose-50 rounded-full opacity-50"></div>
+    <div class="relative z-10">
+        <div class="flex items-center gap-1.5 mb-1">
+            <div class="w-5 h-5 rounded-lg bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-200">
+                <i class="fas fa-chart-line text-[9px] text-white"></i>
+            </div>
+            <p class="text-[9px] font-extrabold text-rose-600 uppercase tracking-wider">Var %</p>
+        </div>
+        <h4 class="text-[13px] font-black text-slate-800 tracking-tight">-1.88%</h4>
+        <div class="mt-1 flex items-center gap-1">
+            <i class="fas fa-caret-down text-rose-500 text-[8px]"></i>
+            <span class="text-[8px] font-bold text-rose-500">Below Target</span>
+        </div>
+    </div>
+</div>
+</section>
+
+        <section class="mx-5 bg-white rounded-[32px] p-4 border border-slate-100 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2"><i id="chart-icon" class="fas fa-chart-pie text-emerald-500 text-xs"></i><h3 id="chart-title" class="font-extrabold text-[12px] text-slate-800 uppercase">Inventory On Hand</h3></div>
+                
+            </div>
+            <div id="chart-container" class="flex items-center justify-between">
+                <div class="relative w-[50%] h-32"><canvas id="inventoryChart"></canvas><div id="center-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none"><span id="center-cat" class="block text-[7px] uppercase font-bold text-slate-400">Total</span><span id="center-val" class="block text-sm font-black text-slate-800">$17.6K</span></div></div>
+                <div class="w-[45%] space-y-2 text-[9px] font-bold text-slate-600">
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="highlightSegment(3)"><div class="w-2 h-2 rounded-sm bg-[#F43F5E]"></div>MEAT (30%)</div>
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="highlightSegment(0)"><div class="w-2 h-2 rounded-sm bg-[#4F46E5]"></div>BEV (27%)</div>
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="highlightSegment(2)"><div class="w-2 h-2 rounded-sm bg-[#F59E0B]"></div>CHEESE (33%)</div>
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="highlightSegment(1)"><div class="w-2 h-2 rounded-sm bg-[#10B981]"></div>DAIRY (10%)</div>
+                </div>
+            </div>
+            <div id="days-chart-area" class="hidden h-56 pt-2"><canvas id="daysChart"></canvas></div>
+        </section>
+
+        <section class="px-5 space-y-2">
+            <div class="flex items-center justify-between px-1"><h3 class="font-extrabold text-sm text-slate-800 flex items-center gap-2"><i class="fas fa-bell text-amber-500"></i> Needing Action</h3><button id="view-all-tasks" onclick="toggleNeedingAction()" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full">View All</button></div>
+            <div class="bg-white rounded-[32px] p-5 border border-slate-100 shadow-sm space-y-4">
+                <div class="flex justify-between items-center pb-3 border-b border-slate-50"><div><p class="text-xs font-bold text-slate-800">Daily Inventory</p><p class="text-[9px] text-slate-400 uppercase">Jan 23, 2026</p></div><button class="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg">Finalize</button></div>
+                <div class="flex justify-between items-center" id="last-initial-task"><div><p class="text-xs font-bold text-slate-800">Weekly Inventory</p><p class="text-[9px] text-slate-400 uppercase">Jan 16, 2026</p></div><button class="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg">Finalize</button></div>
+                <div id="extended-tasks" class="hidden space-y-4 animate-in fade-in pt-4 border-t border-slate-50">
+                    <div class="flex justify-between items-center"><div><p class="text-xs font-bold text-slate-800">Weekly Inventory</p><p class="text-[9px] text-slate-400 uppercase">Dec 31, 2025</p></div><button class="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg">Finalize</button></div>
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-50"><div><p class="text-xs font-bold text-slate-800">Weekly Inventory</p><p class="text-[9px] text-slate-400 uppercase">Dec 01, 2025</p></div><button class="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg">Finalize</button></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-5 space-y-2 pb-4">
+    <div class="flex items-center justify-between px-1">
+        <h3 class="font-extrabold text-sm flex items-center gap-2 text-slate-800">
+            <i class="fas fa-wand-magic-sparkles text-indigo-500"></i> AI Alerts
+        </h3>
+        <button id="view-all-alerts" onclick="toggleAllAlerts()" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full">View All</button>
+    </div>
+    <div class="bg-white rounded-[32px] p-5 border border-slate-100 shadow-sm space-y-4">
+        
+        <div class="cursor-pointer" onclick="toggleAlert('alert-detail-1')">
+            <div class="alert-category-header">
+                <span><i class="fas fa-boxes-stacked mr-1"></i> Low Inventory</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-[8px]">3</span>
+            </div>
+            <div id="alert-detail-1" class="hidden space-y-3 px-1 mt-3 transition-all">
+                <div class="flex justify-between items-center"><p class="text-[10px] font-bold text-slate-800">BURGER BUNS</p><p class="text-[10px] font-black text-rose-600">Critical: 12</p></div>
+                <div class="flex justify-between items-center"><p class="text-[10px] font-bold text-slate-800">COOKING OIL</p><p class="text-[10px] font-black text-orange-500">Low: 2</p></div>
+                <div class="flex justify-between items-center"><p class="text-[10px] font-bold text-slate-800">TOMATO KETCHUP</p><p class="text-[10px] font-black text-orange-500">Low: 5</p></div>
+            </div>
+        </div>
+
+        <div class="cursor-pointer" onclick="toggleAlert('alert-detail-2')">
+            <div class="alert-category-header !text-rose-600 !bg-rose-50">
+                <span><i class="fas fa-arrow-trend-up mr-1"></i> Price Spikes</span>
+                <span class="bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full text-[8px]">3</span>
+            </div>
+            <div id="alert-detail-2" class="hidden px-1 mt-3 space-y-3">
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">AVOCADO HASS</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-rose-600">+36.4%</p><p class="text-[8px] font-bold text-slate-600">$42.5 → $58</p></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">CHEDDAR CHEESE</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-rose-600">+12.2%</p><p class="text-[8px] font-bold text-slate-600">$18.0 → $20.2</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cursor-pointer" onclick="toggleAlert('alert-detail-3')">
+            <div class="alert-category-header !text-orange-600 !bg-orange-50">
+                <span><i class="fas fa-receipt mr-1"></i> Food Cost</span>
+                <span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-[8px]">2</span>
+            </div>
+            <div id="alert-detail-3" class="hidden px-1 mt-3 space-y-3">
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">SIGNATURE RIBEYE</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-orange-500">+3.7%</p><p class="text-[8px] font-bold text-slate-600">28.4% → 32.1%</p></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">CHICKEN WINGS</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-orange-500">+1.5%</p><p class="text-[8px] font-bold text-slate-600">18.2% → 19.7%</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cursor-pointer" onclick="toggleAlert('alert-detail-4')">
+            <div class="alert-category-header !text-slate-600 !bg-slate-100">
+                <span><i class="fas fa-trash-can mr-1"></i> High Waste</span>
+                <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-[8px]">2</span>
+            </div>
+            <div id="alert-detail-4" class="hidden px-1 mt-3 space-y-3">
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">SPRING LETTUCE</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-slate-800">$145.00</p><p class="text-[8px] font-bold text-slate-600">12 Lbs</p></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div><p class="text-[10px] font-bold text-slate-800">POTATO BUNS</p></div>
+                    <div class="text-right"><p class="text-[10px] font-black text-slate-800">$24.50</p><p class="text-[8px] font-bold text-slate-600">4 Packs</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    </main>
+</div>
+
+				<!-- 2. INVENTORY LIST SCREEN (More data added) -->
+				<div id="screen-inventory" class="hidden screen-fade-in px-5 py-4 space-y-4 overflow-y-auto h-full pb-32">
+    <div class="flex gap-3">
+        <div onclick="toggleDateModal(true)" class="flex-1 bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm text-xs font-bold text-slate-600 cursor-pointer active:scale-95 transition-transform">
+            <div class="flex items-center gap-3">
+                <i class="far fa-calendar-alt text-indigo-500"></i>
+                <span id="display-date-range">FEB 03 - FEB 23</span>
+            </div>
+            <i class="fas fa-chevron-down text-slate-300"></i>
+        </div>
+        
+        <button onclick="toggleFilterModal(true)" class="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm active:scale-90 transition-all">
+            <i class="fas fa-filter"></i>
+        </button>
+    </div>
+
+    <div class="space-y-4">
+        
+        <div class="swipe-container group cursor-pointer" onclick="showScreen('storage')">
+            <div class="swipe-actions">
+                <div class="action-btn bg-blue-500"><i class="fas fa-edit"></i></div>
+                <div class="action-btn bg-rose-500"><i class="fas fa-file-pdf"></i></div>
+            </div>
+            <div class="inventory-card-swipe bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="text-[14px] font-black text-slate-800">Mon, Feb 16, 2026</h4>
+                        <span class="status-pill status-finalized">● Finalized</span>
+                    </div>
+                    <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">Weekly</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Inv. Value</p><p class="text-[13px] font-black text-slate-800">$20,267</p></div>
+                    <div class="border-x border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase">Var %</p><p class="text-[13px] font-black text-emerald-500">5.13 <i class="fas fa-arrow-up text-[10px]"></i></p></div>
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Var $</p><p class="text-[13px] font-black text-emerald-500">2209</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-container cursor-pointer" onclick="showScreen('storage')">
+            <div class="swipe-actions">
+                <div class="action-btn bg-blue-500"><i class="fas fa-edit"></i></div>
+                <div class="action-btn bg-rose-500"><i class="fas fa-file-pdf"></i></div>
+            </div>
+            <div class="inventory-card-swipe bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="text-[14px] font-black text-slate-800">Mon, Feb 16, 2026</h4>
+                        <span class="status-pill status-unfinalized">○ Un-Finalized</span>
+                    </div>
+                    <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[9px] font-black uppercase">Daily</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Inv. Value</p><p class="text-[13px] font-black text-slate-800">$7,732</p></div>
+                    <div class="border-x border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase">Var %</p><p class="text-[13px] font-black text-rose-500">-1.88 <i class="fas fa-arrow-down text-[10px]"></i></p></div>
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Var $</p><p class="text-[13px] font-black text-rose-500">-113</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-container group cursor-pointer" onclick="showScreen('storage')">
+            <div class="swipe-actions">
+                <div class="action-btn bg-blue-500"><i class="fas fa-edit"></i></div>
+                <div class="action-btn bg-rose-500"><i class="fas fa-file-pdf"></i></div>
+            </div>
+            <div class="inventory-card-swipe bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="text-[14px] font-black text-slate-800">Sat, Jan 31, 2026</h4>
+                        <span class="status-pill status-finalized">● Finalized</span>
+                    </div>
+                    <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">Monthly</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Inv. Value</p><p class="text-[13px] font-black text-slate-800">$84,550</p></div>
+                    <div class="border-x border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase">Var %</p><p class="text-[13px] font-black text-emerald-500">2.45 <i class="fas fa-arrow-up text-[10px]"></i></p></div>
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Var $</p><p class="text-[13px] font-black text-emerald-500">2071</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-container group cursor-pointer" onclick="showScreen('storage')">
+            <div class="swipe-actions">
+                <div class="action-btn bg-blue-500"><i class="fas fa-edit"></i></div>
+                <div class="action-btn bg-rose-500"><i class="fas fa-file-pdf"></i></div>
+            </div>
+            <div class="inventory-card-swipe bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="text-[14px] font-black text-slate-800">Sun, Feb 15, 2026</h4>
+                        <span class="status-pill status-finalized">● Finalized</span>
+                    </div>
+                    <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[9px] font-black uppercase">Daily</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Inv. Value</p><p class="text-[13px] font-black text-slate-800">$7,120</p></div>
+                    <div class="border-x border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase">Var %</p><p class="text-[13px] font-black text-emerald-500">0.15 <i class="fas fa-arrow-up text-[10px]"></i></p></div>
+                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Var $</p><p class="text-[13px] font-black text-emerald-500">11</p></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+				<!-- 3. STORAGE AREAS SCREEN -->
+				<div id="screen-storage" class="hidden screen-fade-in h-full bg-[#F8FAFC] relative flex flex-col">
+    <div class="tab-pill-container">
+        <button id="tab-item-count" class="tab-btn active" onclick="switchStorageTab('count')">
+            <i class="fas fa-abacus"></i> Item Count
+        </button>
+        <button id="tab-variance-report" class="tab-btn inactive" onclick="switchStorageTab('variance')">
+            <i class="fas fa-chart-line"></i> Variance Report
+        </button>
+    </div>
+
+    <div class="px-5 pb-4 flex items-center justify-center">
+        <div class="py-2">
+        <div class="date-pill-display">
+            <i class="fas fa-calendar-alt text-indigo-500 text-xs"></i>
+            <span class="text-[11px] font-extrabold text-slate-600">February 17, 2026</span>
+        </div>
+    </div>
+        <button id="sort-trigger" class="hidden w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 shadow-sm active:scale-90 transition-all" onclick="toggleSortModal(true)">
+            <i class="fas fa-arrows-up-down"></i>
+        </button>
+    </div>
+
+    <div id="storage-count-list" class="flex-1 overflow-y-auto px-5 space-y-3 pb-40">
+        <div onclick="showScreen('items-list', 'FRONT OF HOUSE')" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-tight">Front of the House</h4>
+                <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$0.00</span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full w-[5%]"></div>
+                </div>
+                <div class="text-right"><p class="text-[10px] font-black text-slate-700">0/3</p><p class="text-[8px] font-bold text-slate-300 uppercase leading-none">Counted</p></div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'WALK IN')" class="storage-card-premium card-in-progress">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h4 class="text-[12px] font-extrabold text-slate-700 uppercase tracking-tight">Walk In</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] font-bold text-slate-400">Value:</span>
+                        <span class="text-[10px] font-black text-indigo-600">$420.50</span>
+                    </div>
+                </div>
+                <div ><i class="fas fa-snowflake text-indigo-400"></i></div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full progress-glow" style="width: 45%"></div>
+                </div>
+                <div class="min-w-[40px] text-right">
+                    <p class="text-[11px] font-black text-slate-700">3/6</p>
+                    <p class="text-[7px] font-bold text-slate-400 uppercase leading-none">Items</p>
+                </div>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'Pizza Dress')" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-tight">Pizza Dress</h4>
+                <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$0.00</span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full"><div class="bg-rose-500 h-full w-[2%]"></div></div>
+                <div class="text-right"><p class="text-[10px] font-black text-slate-700">0/3</p><p class="text-[8px] font-bold text-slate-300 uppercase leading-none">Counted</p></div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'Prep Area')" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-tight">Prep Area</h4>
+                <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$0.00</span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full"><div class="bg-rose-500 h-full w-[2%]"></div></div>
+                <div class="text-right"><p class="text-[10px] font-black text-slate-700">0/2</p><p class="text-[8px] font-bold text-slate-300 uppercase leading-none">Counted</p></div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'NON-VARIANCE ITEMS')" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-tight">Non-Variance Items</h4>
+                <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$0.00</span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full w-[2%]"></div>
+                </div>
+                <div class="text-right"><p class="text-[10px] font-black text-slate-700">0/3</p><p class="text-[8px] font-bold text-slate-300 uppercase leading-none">Counted</p></div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'Freezer')" class="storage-card-premium card-in-progress">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h4 class="text-[12px] font-extrabold text-slate-700 uppercase">Freezer</h4>
+                    <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$675.60</span></p>
+                    <div class="flex items-center gap-1.5 mt-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                        <i class="fas fa-exclamation-triangle text-amber-500 text-[8px]"></i>
+                        <span class="text-[9px] font-bold text-amber-700 uppercase">3 Recounts Suggested</span>
+                    </div>
+                </div>
+                <i class="fas fa-snowflake text-indigo-400"></i>
+            </div>
+            <div class="flex items-center gap-3 mt-3">
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full" style="width: 60%"></div>
+                </div>
+                <span class="text-[10px] font-black text-slate-700">2/4</span>
+            </div>
+        </div>
+
+        <div onclick="showScreen('items-list', 'Dry Storage')" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-tight">Dry Storage</h4>
+                <p class="text-[10px] font-bold text-slate-400">Value: <span class="text-indigo-600 ml-1">$0.00</span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full"><div class="bg-rose-500 h-full w-[2%]"></div></div>
+                <div class="text-right"><p class="text-[10px] font-black text-slate-700">0/53</p><p class="text-[8px] font-bold text-slate-300 uppercase leading-none">Counted</p></div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="storage-variance-list" class="hidden flex-1 overflow-y-auto px-5 pb-40 space-y-3">
+    
+    
+
+    <div class="space-y-3">
+        <div class="variance-card border-l-4 border-l-rose-500" onclick="openCategoryDetail('Cheese Cost')">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-[13px] font-black text-slate-800 uppercase tracking-tight">Cheese Cost</h4>
+                <div class="bg-rose-50 px-3 py-1 rounded-full text-right">
+                    <p class="text-[7px] font-black text-rose-400 uppercase leading-none mb-0.5">Variance %</p>
+                    <p class="text-[14px] font-black text-rose-600 leading-none">58.16%</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div class="metric-box">
+                    <p class="metric-label">Ideal Cost</p>
+                    <p class="metric-value">$678.14</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Variance $</p>
+                    <p class="metric-value text-rose-600">$2,313.19</p>
+                </div>
+				<div class="metric-box">
+                    <p class="metric-label">Act. Food Cost</p>
+                    <p class="metric-value">$2,991.34</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Waste Amt.</p>
+                    <p class="metric-value">$48.98</p>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="variance-card border-l-4 border-l-indigo-500" onclick="openCategoryDetail('Meat Cost')">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-[13px] font-black text-slate-800 uppercase tracking-tight">Meat Cost</h4>
+                <div class="bg-indigo-50 px-3 py-1 rounded-full text-right">
+                    <p class="text-[7px] font-black text-indigo-400 uppercase leading-none mb-0.5">Variance %</p>
+                    <p class="text-[14px] font-black text-indigo-600 leading-none">10.53%</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div class="metric-box">
+                    <p class="metric-label">Ideal Cost</p>
+                    <p class="metric-value">$124.97</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Variance $</p>
+                    <p class="metric-value text-indigo-600">$418.86</p>
+                </div>
+				<div class="metric-box">
+                    <p class="metric-label">Act. Food Cost</p>
+                    <p class="metric-value">$543.83</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Waste Amt.</p>
+                    <p class="metric-value">$9.15</p>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="variance-card border-l-4 border-l-indigo-500" onclick="openCategoryDetail('Paper Cost')">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-[13px] font-black text-slate-800 uppercase tracking-tight">Paper Cost</h4>
+                <div class="bg-indigo-50 px-3 py-1 rounded-full text-right">
+                    <p class="text-[7px] font-black text-indigo-400 uppercase leading-none mb-0.5">Variance %</p>
+                    <p class="text-[14px] font-black text-indigo-600 leading-none">13.40%</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div class="metric-box">
+                    <p class="metric-label">Ideal Cost</p>
+                    <p class="metric-value">$119.25</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Variance $</p>
+                    <p class="metric-value text-indigo-600">$532.85</p>
+                </div>
+				<div class="metric-box">
+                    <p class="metric-label">Act. Food Cost</p>
+                    <p class="metric-value">$652.10</p>
+                </div>
+                <div class="metric-box">
+                    <p class="metric-label">Waste Amt.</p>
+                    <p class="metric-value">$10.74</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="finalize-footer">
+        <button class="finalize-btn-fixed btn-bounce" onclick="showScreen('inventory')">Finalize</button>
+    </div>
+
+    <div id="sort-modal" class="hidden absolute inset-0 bg-black/40 backdrop-blur-sm z-[9000] flex items-end">
+        <div id="sort-modal-container" class="bg-white w-full rounded-t-[40px] p-8 translate-y-full transition-transform duration-300">
+            <h3 class="text-center text-indigo-600 font-bold mb-6 uppercase tracking-widest text-xs">Sort By</h3>
+            <div class="space-y-6">
+                <label class="flex justify-between items-center"><span class="text-slate-600 font-bold text-sm">Highest $ Variance</span><input type="radio" name="sort" class="w-5 h-5 accent-indigo-600" checked></label>
+                <label class="flex justify-between items-center"><span class="text-slate-600 font-bold text-sm">Lowest $ Variance</span><input type="radio" name="sort" class="w-5 h-5 accent-indigo-600"></label>
+                <label class="flex justify-between items-center"><span class="text-slate-600 font-bold text-sm">Highest Food Cost</span><input type="radio" name="sort" class="w-5 h-5 accent-indigo-600"></label>
+                <label class="flex justify-between items-center"><span class="text-slate-600 font-bold text-sm">Highest % Variance</span><input type="radio" name="sort" class="w-5 h-5 accent-indigo-600"></label>
+            </div>
+            <div class="flex gap-4 mt-10">
+                <button onclick="toggleSortModal(false)" class="flex-1 py-4 font-black text-slate-400 uppercase text-[10px]">Cancel</button>
+                <button onclick="toggleSortModal(false)" class="flex-1 bg-[#10b981] text-white py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+				<!-- 4. ITEM COUNT SCREEN -->
+				<div id="screen-item-count" class="hidden screen-fade-in h-full bg-white relative overflow-y-auto px-5 py-4 space-y-6 pb-40">
+					<div class="flex justify-between items-center"><div class="flex gap-4"><i class="fas fa-barcode text-indigo-500 text-lg"></i><i class="fas fa-calculator text-slate-400 text-lg"></i></div><div class="flex items-center gap-2"><label class="text-[10px] font-bold text-rose-400 uppercase">Detailed</label><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div></div>
+					<div class="bg-slate-100 rounded-3xl overflow-hidden p-0 relative"><div class="bg-slate-600 text-white text-[10px] p-2 flex justify-between uppercase font-bold"><span>Express Window Box 9x7</span><span class="bg-cyan-500 px-2 rounded-full">16/30</span></div><div class="h-48 flex items-center justify-center p-8"><i class="fas fa-chevron-left text-slate-400 text-2xl absolute left-4"></i><div class="w-32 h-32 bg-white/50 rounded-2xl flex items-center justify-center"><i class="fas fa-box-open text-slate-300 text-5xl"></i></div><i class="fas fa-chevron-right text-slate-400 text-2xl absolute right-4"></i></div></div>
+					<div class="item-control-box"><span>Bale (100ea)</span><div class="flex items-center gap-4"><button class="w-8 h-8 bg-rose-100 text-rose-50 rounded-full flex items-center justify-center"><i class="fas fa-minus text-rose-500"></i></button><span class="font-black text-slate-800">0.00</span><button class="w-8 h-8 bg-emerald-100 text-emerald-50 rounded-full flex items-center justify-center"><i class="fas fa-plus text-emerald-500"></i></button></div></div>
+				</div>
+			</div>
+			
+			 <!-- 4. ITEM COUNT LIST -->
+			<div id="screen-items-list" class="hidden screen-fade-in h-full bg-[#F8FAFC] relative flex flex-col">
+    <div class="bg-[#333745] p-5 text-white text-center shadow-lg border-b border-white/10">
+        <p class="text-[10px] opacity-70 uppercase font-black tracking-widest mb-1">Total Location Value</p>
+        <h2 class="text-2xl font-black tracking-tighter">$ 8,005.50</h2>
+    </div>
+
+    <div class="px-5 pt-6 bg-[#F8FAFC]">
+        <div class="view-toggle mb-6">
+    <div id="btn-swipe-view" class="toggle-option active" onclick="toggleListView(false)">SWIPE VIEW</div>
+    <div id="btn-list-view" class="toggle-option inactive" onclick="toggleListView(true)">LIST VIEW</div>
+</div>
+
+        <div id="search-container" class="px-1 mb-6">
+            <div class="flex items-center gap-2">
+                <div class="search-wrapper flex-1">
+                    <i class="fas fa-search text-slate-400 text-[10px]"></i>
+                    <input type="text" id="item-search-input" oninput="filterItemsList()" placeholder="Search name or SKU..." class="search-input-compact">
+                    <div class="search-actions-group">
+                        <button class="search-action-btn" title="Scan Barcode"><i class="fas fa-barcode"></i></button>
+                        <button class="search-action-btn" id="voice-search-btn" onclick="startVoiceSearch()"><i class="fas fa-microphone"></i></button>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <button onclick="toggleFilterMenu()" class="w-[38px] h-[38px] bg-white border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 shadow-sm active:scale-90 transition-all">
+                        <i class="fas fa-filter text-sm"></i>
+                    </button>
+                    <div id="filter-menu" class="hidden absolute right-0 mt-2 w-32 bg-white border border-slate-100 rounded-xl shadow-xl z-[9000] overflow-hidden">
+                        <button onclick="applyFilter('all')" class="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-600 hover:bg-slate-50 border-b border-slate-50">All Items</button>
+                        <button onclick="applyFilter('counted')" class="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-600 hover:bg-slate-50 border-b border-slate-50">Counted</button>
+                        <button onclick="applyFilter('uncounted')" class="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-600 hover:bg-slate-50">Un-Counted</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="list-mode" class="flex-1 overflow-y-auto px-5 space-y-3 pb-40">
+        <div onclick="openCountModal('Express Window Box 9x7', 'SKU-102938 | SYSCO')" class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between transition-all active:scale-95">
+            <div class="flex-1 pr-2">
+                <p class="text-[12px] font-black text-slate-800 uppercase leading-tight">Express Window Box 9x7</p>
+                <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-wider">SKU-102938 | SYSCO</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[11px] font-black text-slate-700 leading-none">4.3 Case(s)</p>
+                <p class="text-[10px] font-bold text-indigo-600 mt-1">Value: $ 210.5</p>
+            </div>
+            <i class="fas fa-chevron-right text-slate-300 ml-4 text-[10px]"></i>
+        </div>
+        </div>
+
+    <div id="swipe-mode" class="hidden flex-1 flex flex-col px-5">
+    <div id="swipe-card-container" class="bg-white rounded-[32px] overflow-hidden shadow-xl border border-slate-50 flex flex-col mb-4 transition-all duration-300">
+        <div class="bg-[#333745] text-white px-4 py-3 flex justify-between items-center">
+            <span id="swipe-item-name" class="text-[10px] font-black uppercase tracking-tight truncate w-[70%]">EXPRESS WINDOW BOX 9X7</span>
+            <span id="swipe-item-count" class="bg-cyan-500 text-[10px] font-black px-3 py-0.5 rounded-full">1/6</span>
+        </div>
+
+        <div class="h-40 flex items-center justify-center relative bg-slate-50/30">
+            <button onclick="changeSwipeItem(-1)" class="absolute left-3 text-slate-300 active:scale-90 transition-transform"><i class="fas fa-chevron-left text-2xl"></i></button>
+            <div class="w-32 h-32 bg-white rounded-3xl shadow-sm border-4 border-white overflow-hidden">
+                <img id="swipe-item-img" src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=300" class="w-full h-full object-cover">
+            </div>
+            <button onclick="changeSwipeItem(1)" class="absolute right-3 text-slate-300 active:scale-90 transition-transform"><i class="fas fa-chevron-right text-2xl"></i></button>
+        </div>
+
+        <div class="p-5 space-y-3">
+            <div class="unit-card flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase">Unit: Bale (100ea)</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="updateCount('sw-val-1', -1)" class="w-8 h-8 rounded-full bg-white text-rose-500 shadow-sm">-</button>
+                    <span id="sw-val-1" class="font-black text-lg min-w-[40px] text-center swipe-val">0.00</span>
+                    <button onclick="updateCount('sw-val-1', 1)" class="w-8 h-8 rounded-full bg-white text-emerald-500 shadow-sm">+</button>
+                </div>
+            </div>
+
+            <div class="unit-card flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase">Unit: Pack (10ea)</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="updateCount('sw-val-2', -1)" class="w-8 h-8 rounded-full bg-white text-rose-500 shadow-sm">-</button>
+                    <span id="sw-val-2" class="font-black text-lg min-w-[40px] text-center swipe-val">0.00</span>
+                    <button onclick="updateCount('sw-val-2', 1)" class="w-8 h-8 rounded-full bg-white text-emerald-500 shadow-sm">+</button>
+                </div>
+            </div>
+
+            <div class="unit-card flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase">Unit: Box (5ea)</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="updateCount('sw-val-3', -1)" class="w-8 h-8 rounded-full bg-white text-rose-500 shadow-sm">-</button>
+                    <span id="sw-val-3" class="font-black text-lg min-w-[40px] text-center swipe-val">0.00</span>
+                    <button onclick="updateCount('sw-val-3', 1)" class="w-8 h-8 rounded-full bg-white text-emerald-500 shadow-sm">+</button>
+                </div>
+            </div>
+
+            <div class="unit-card flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase">Unit: Each</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="updateCount('sw-val-4', -1)" class="w-8 h-8 rounded-full bg-white text-rose-500 shadow-sm">-</button>
+                    <span id="sw-val-4" class="font-black text-lg min-w-[40px] text-center swipe-val">0.00</span>
+                    <button onclick="updateCount('sw-val-4', 1)" class="w-8 h-8 rounded-full bg-white text-emerald-500 shadow-sm">+</button>
+                </div>
+            </div>
+
+            <div class="swipe-footer-summary pt-2 border-t border-slate-100 flex justify-between items-center">
+                <div class="text-center flex-1">
+                    <p class="text-[7px] font-black text-slate-400 uppercase">Inventory Value</p>
+                    <p id="swipe-value-display" class="text-xs font-black text-slate-800">$ 0.00</p>
+                </div>
+                <div class="w-px h-6 bg-slate-100"></div>
+                <div class="text-center flex-1">
+                    <p class="text-[7px] font-black text-slate-400 uppercase">Total Count</p>
+                    <p id="swipe-total-display" class="text-xs font-black text-indigo-600">0.00</p>
+                </div>
+            </div>
+
+            <button onclick="saveAndNext()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase mt-2 shadow-lg active:scale-95 transition-all">SAVE & NEXT</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="screen-ingredient-detail" class="hidden screen-fade-in absolute inset-0 h-full bg-[#F8FAFC] z-[5000] flex flex-col">
+    <div class="bg-[#333745] px-5 pb-4 pt-12 text-white flex items-center gap-4">
+        <button onclick="showScreen('storage')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 active:scale-90 transition-transform">
+            <i class="fas fa-chevron-left text-xs"></i>
+        </button>
+        <h2 id="category-detail-title" class="text-[12px] font-black uppercase tracking-widest">BEVERAGE COST DETAIL</h2>
+        <div class="flex-1 text-right flex justify-end gap-4">
+            <i class="fas fa-filter text-xs opacity-60"></i>
+            <i class="fas fa-arrows-up-down text-xs opacity-60"></i>
+        </div>
+    </div>
+
+    <div id="ingredient-list-container" class="flex-1 overflow-y-auto px-5 pt-4 pb-40 space-y-3">
+        
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Juice 450ml', {unit: 'ea', actual: '2.00', ideal: '0.00', variance: '2.00', varDol: '3.29'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Juice 450ml</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: ea</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">2.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">0.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">2.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$3.29</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('591ml Bottle', {unit: 'ea', actual: '43.00', ideal: '32.00', variance: '11.00', varDol: '11.73'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">591ml Bottle</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: ea</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">43.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">32.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">11.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$11.73</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Rockstar Energy Drink', {unit: 'ea', actual: '6.00', ideal: '5.00', variance: '1.00', varDol: '1.60'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Rockstar Energy Drink</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: ea</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">6.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">5.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">1.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$1.60</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Coke Syrup 5gal', {unit: 'BIB', actual: '1.50', ideal: '1.20', variance: '0.30', varDol: '25.50'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Coke Syrup 5gal</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: BIB</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">1.50</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">1.20</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">0.30</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$25.50</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Bottled Water 500ml', {unit: 'Case', actual: '10.00', ideal: '9.50', variance: '0.50', varDol: '4.15'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Bottled Water 500ml</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: Case</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">10.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">9.50</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">0.50</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$4.15</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Iced Tea Mix', {unit: 'bag', actual: '4.00', ideal: '4.00', variance: '0.00', varDol: '0.00'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Iced Tea Mix</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: bag</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">4.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">4.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-emerald-500">0.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-emerald-500">$0.00</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Monster Energy', {unit: 'ea', actual: '15.00', ideal: '12.00', variance: '3.00', varDol: '6.45'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Monster Energy</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: ea</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">15.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">12.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-rose-500">3.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-rose-500">$6.45</p></div>
+            </div>
+        </div>
+
+        <div class="ingredient-card cursor-pointer active:scale-95 transition-transform" 
+             onclick="openVarianceReport('Apple Juice Box', {unit: 'ea', actual: '24.00', ideal: '24.00', variance: '0.00', varDol: '0.00'})">
+            <div class="flex justify-between items-start mb-1">
+                <h5 class="text-[12px] font-black text-slate-800 uppercase">Apple Juice Box</h5>
+                <span class="text-[8px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Unit: ea</span>
+            </div>
+            <div class="usage-grid">
+                <div class="usage-item"><p class="usage-label">Actual Usage</p><p class="usage-value">24.00</p></div>
+                <div class="usage-item"><p class="usage-label">Ideal Usage</p><p class="usage-value">24.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance</p><p class="usage-value text-emerald-500">0.00</p></div>
+                <div class="usage-item"><p class="usage-label">Variance $</p><p class="usage-value text-emerald-500">$0.00</p></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="screen-variance-detail" class="hidden absolute inset-0 h-full bg-[#f4f7f6] z-[6000] flex flex-col">
+    <div class="bg-[#333745] px-5 pb-4 pt-12 text-white flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button onclick="showScreen('ingredient-detail')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 active:scale-90 transition-transform">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </button>
+            <h2 class="text-[12px] font-black uppercase tracking-widest">Variance Report</h2>
+        </div>
+        
+    </div>
+
+    <div class="bg-white px-5 py-3 border-b border-slate-200 text-center">
+        <p id="var-report-item-name" class="text-sm font-bold text-slate-600">591ml Bottle</p>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pb-20">
+        <div class="bg-slate-100 px-4 py-2 text-[11px] font-extrabold text-slate-800 uppercase tracking-tight text-center">Item Details</div>
+        
+        <table class="w-full text-sm border-collapse bg-white">
+            <tr class="border-b border-slate-100"><td class="p-4 text-slate-600">Count Unit</td><td id="det-unit" class="p-4 text-right font-bold text-slate-800">ea</td></tr>
+            <tr class="border-b border-slate-100 bg-slate-50/50"><td class="p-4 text-slate-600">Open Inventory</td><td id="det-open" class="p-4 text-right font-bold text-slate-800">667.00</td></tr>
+            <tr class="border-b border-slate-100"><td class="p-4 text-slate-600">Transfer In</td><td id="det-trans-in" class="p-4 text-right font-bold text-slate-800">0.00</td></tr>
+            <tr class="border-b border-slate-100 bg-slate-50/50"><td class="p-4 text-slate-600">Total Delivery</td><td id="det-delivery" class="p-4 text-right font-bold text-slate-800">0.00</td></tr>
+            <tr class="border-b border-slate-100"><td class="p-4 text-slate-600">Closing Inventory</td><td id="det-close" class="p-4 text-right font-bold text-slate-800">624.00</td></tr>
+            <tr class="border-b border-slate-100 bg-slate-50/50"><td class="p-4 text-slate-600">Transfer Out</td><td id="det-trans-out" class="p-4 text-right font-bold text-slate-800">0.00</td></tr>
+            <tr class="border-b border-slate-100"><td class="p-4 font-bold text-indigo-600">Actual Usage</td><td id="det-actual" class="p-4 text-right font-bold text-indigo-600">43.00</td></tr>
+            <tr class="border-b border-slate-100 bg-slate-50/50"><td class="p-4 font-bold text-rose-500">Ideal Usage</td><td id="det-ideal" class="p-4 text-right font-bold text-rose-500">32.00</td></tr>
+            <tr class="border-b border-slate-100"><td class="p-4 text-slate-600">Waste Amount</td><td id="det-waste" class="p-4 text-right font-bold text-slate-800">0.00</td></tr>
+            <tr class="border-b border-slate-100 bg-slate-50/50"><td class="p-4 text-slate-600">Unit Cost</td><td id="det-cost" class="p-4 text-right font-bold text-slate-800">1.07</td></tr>
+            <tr class="border-b border-slate-100 bg-amber-50"><td class="p-4 font-bold">Variance Quantity</td><td id="det-var-qty" class="p-4 text-right font-bold text-rose-600">11.00</td></tr>
+            <tr class="border-b border-slate-200 bg-amber-100/50"><td class="p-4 font-bold text-slate-800">Variance $</td><td id="det-var-dol" class="p-4 text-right font-bold text-rose-600">11.73</td></tr>
+        </table>
+
+<div class="bg-slate-100 px-5 py-2 mt-4 grid grid-cols-3 items-center border-t border-slate-200">
+    <div></div>
+
+    <span class="text-[11px] font-extrabold text-slate-800 uppercase tracking-tight text-center whitespace-nowrap">
+        Detailed Analysis
+    </span>
+
+    <div class="text-right">
+        <button id="view-all-variance" onclick="toggleAllVarianceSections()" 
+                class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider active:scale-95 transition-all">
+            View All
+        </button>
+    </div>
+</div>
+
+        <div class="mt-0 border-b border-slate-200">
+            <div onclick="toggleVarSection('sect-ideal')" class="bg-slate-100 px-5 py-3 flex justify-between items-center cursor-pointer">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Ideal Usage Breakdown</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full text-[9px] font-black">1</span>
+            </div>
+            <div id="sect-ideal" class="hidden bg-white overflow-x-auto">
+                <table class="w-full text-[10px] text-center border-collapse">
+                    <thead class="bg-slate-50 text-slate-400 font-black uppercase border-b">
+                        <tr>
+                            <th class="p-2 border-r">Menu Items</th>
+                            <th class="p-2 border-r">Menu Mix Date</th>
+                            <th class="p-2 border-r">Qty Sold</th>
+                            <th class="p-2 border-r">Total Recipe Qty in Base Unit</th>
+                            <th class="p-2">Total Recipe Qty in Rpt Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ideal-usage-body" class="text-slate-700 font-bold">
+                        <tr class="border-b">
+                            <td class="p-3 border-r">591 mL Beverage</td>
+                            <td class="p-3 border-r">02/18/2026</td>
+                            <td class="p-3 border-r">32.0</td>
+                            <td class="p-3 border-r">32.00</td>
+                            <td class="p-3 text-indigo-600">32.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="bg-slate-50 p-2 text-center text-[10px] font-black text-slate-500">
+                    Total Ideal Usages (In Rpt Unit): <span id="total-ideal-rpt">32.0ea</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-200">
+            <div onclick="toggleVarSection('sect-supplier')" class="bg-slate-100 px-5 py-3 flex justify-between items-center cursor-pointer">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Supplier Delivery</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full text-[9px] font-black">1</span>
+            </div>
+            <div id="sect-supplier" class="hidden bg-white overflow-x-auto">
+                <table class="w-full text-[10px] text-center border-collapse">
+                    <thead class="bg-slate-50 text-slate-400 font-black uppercase border-b">
+                        <tr>
+                            <th class="p-2 border-r">Delivery Date</th>
+                            <th class="p-2 border-r">PO No.</th>
+                            <th class="p-2 border-r">SKU No.</th>
+                            <th class="p-2">Case Rec. | Rpt. Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplier-delivery-body" class="text-slate-700 font-bold">
+                        <tr class="border-b">
+                            <td class="p-3 border-r">02/18/2026</td>
+                            <td class="p-3 border-r">0000232451</td>
+                            <td class="p-3 border-r">1360475</td>
+                            <td class="p-3">1.00 | 1.00ea</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="bg-slate-50 p-2 text-center text-[10px] font-black text-slate-500">
+                    Total Received (In Rpt Unit): <span id="total-received-rpt">1.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-200">
+            <div onclick="toggleVarSection('sect-open')" class="bg-slate-100 px-5 py-3 flex justify-between items-center cursor-pointer">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Open Count</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full text-[9px] font-black">1</span>
+            </div>
+            <div id="sect-open" class="hidden bg-white overflow-x-auto">
+                <table class="w-full text-[10px] text-center border-collapse">
+                    <thead class="bg-slate-50 text-slate-400 font-black uppercase border-b">
+                        <tr>
+                            <th class="p-2 border-r">SKU</th>
+                            <th class="p-2 border-r">Storage Location</th>
+                            <th class="p-2 border-r">Name</th>
+                            <th class="p-2 border-r">Inventory #</th>
+                            <th class="p-2 border-r"># in Rpt Unit</th>
+                            <th class="p-2">Item Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="open-count-body" class="text-slate-700 font-bold">
+                        <tr class="border-b">
+                            <td class="p-3 border-r">1504250</td>
+                            <td class="p-3 border-r">FRONT OF THE HOUSE</td>
+                            <td class="p-3 border-r text-left">BOX CUSTOM ...</td>
+                            <td class="p-3 border-r">3.83 Case</td>
+                            <td class="p-3 border-r">766.00</td>
+                            <td class="p-3">Supplier Item</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-slate-50/50 font-black text-slate-800 text-[9px]">
+                        <tr>
+                            <td colspan="3" class="p-2 text-right border-r uppercase">Total</td>
+                            <td id="open-total-inv" class="p-2 border-r">3.83</td>
+                            <td id="open-total-rpt" class="p-2 border-r">766.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-200">
+            <div onclick="toggleVarSection('sect-close')" class="bg-slate-100 px-5 py-3 flex justify-between items-center cursor-pointer">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Closing Count</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full text-[9px] font-black">1</span>
+            </div>
+            <div id="sect-close" class="hidden bg-white overflow-x-auto">
+                <table class="w-full text-[10px] text-center border-collapse">
+                    <thead class="bg-slate-50 text-slate-400 font-black uppercase border-b">
+                        <tr>
+                            <th class="p-2 border-r">SKU</th>
+                            <th class="p-2 border-r">Storage Location</th>
+                            <th class="p-2 border-r">Name</th>
+                            <th class="p-2 border-r">Inventory #</th>
+                            <th class="p-2 border-r"># in Rpt Unit</th>
+                            <th class="p-2">Item Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="closing-count-body" class="text-slate-700 font-bold">
+                        <tr class="border-b">
+                            <td class="p-3 border-r">1504250</td>
+                            <td class="p-3 border-r">FRONT OF THE HOUSE</td>
+                            <td class="p-3 border-r text-left">BOX CUSTOM ...</td>
+                            <td class="p-3 border-r">3.76 Case</td>
+                            <td class="p-3 border-r">752.00</td>
+                            <td class="p-3">Supplier Item</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-slate-50/50 font-black text-slate-800 text-[9px]">
+                        <tr>
+                            <td colspan="3" class="p-2 text-right border-r uppercase">Total</td>
+                            <td id="close-total-inv" class="p-2 border-r">3.76</td>
+                            <td id="close-total-rpt" class="p-2 border-r">752.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="paytm-fab" onclick="toggleModal()"><i class="fas fa-plus"></i></div>
+
+<div id="count-modal-overlay" onclick="closeCountModal()"></div>
+	<!-- Paytm Style FAB -->
+			
+
+	<div id="count-bottom-sheet" class="hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-[40px] shadow-2xl flex flex-col z-[8001] translate-y-full transition-transform duration-300">
+		<div class="bg-[#333745] text-white px-5 py-4 flex justify-between items-center rounded-t-[40px] relative">
+			<div class="flex-1 pr-10"> 
+				<span id="modal-item-name" class="text-[11px] font-black uppercase tracking-tight block truncate">EXPRESS WINDOW BOX 9X7</span>
+				<p id="modal-item-sku" class="text-[9px] opacity-60 font-bold uppercase">SKU-102938 | SYSCO</p>
+			</div>
+			
+			<button onclick="closeCountModal()" class="absolute right-4 top-4 w-10 h-10 flex items-center justify-center bg-white/10 rounded-full z-[9999] pointer-events-auto active:scale-90 transition-transform">
+				<i class="fas fa-times text-xs"></i>
+			</button>
+		</div>
+
+		<div class="p-5 space-y-4">
+			<div class="w-24 h-24 mx-auto rounded-2xl border-4 border-slate-50 shadow-sm overflow-hidden">
+				<img id="modal-item-img" src="https://via.placeholder.com/150">
+
+			</div>
+
+			<div class="flex justify-end">
+				<button onclick="clearCounts()" class="text-[9px] font-black text-rose-400 uppercase flex items-center gap-1">
+					<i class="fas fa-rotate-left"></i> Clear
+				</button>
+			</div>
+
+			<div class="space-y-2">
+    <div class="unit-row-card">
+        <span class="text-[10px] font-bold text-slate-400">Bale (100ea)</span>
+        <div class="flex items-center gap-3">
+            <button onclick="updateCount('m-val1', -1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-rose-500">-</button>
+            <span id="m-val1" class="font-black text-slate-800 text-sm w-8 text-center swipe-val">0.00</span>
+            <button onclick="updateCount('m-val1', 1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-emerald-500">+</button>
+        </div>
+    </div>
+    <div class="unit-row-card">
+        <span class="text-[10px] font-bold text-slate-400">Pack (10ea)</span>
+        <div class="flex items-center gap-3">
+            <button onclick="updateCount('m-val2', -1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-rose-500">-</button>
+            <span id="m-val2" class="font-black text-slate-800 text-sm w-8 text-center swipe-val">0.00</span>
+            <button onclick="updateCount('m-val2', 1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-emerald-500">+</button>
+        </div>
+    </div>
+    <div class="unit-row-card">
+        <span class="text-[10px] font-bold text-slate-400">Box (5ea)</span>
+        <div class="flex items-center gap-3">
+            <button onclick="updateCount('m-val3', -1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-rose-500">-</button>
+            <span id="m-val3" class="font-black text-slate-800 text-sm w-8 text-center swipe-val">0.00</span>
+            <button onclick="updateCount('m-val3', 1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-emerald-500">+</button>
+        </div>
+    </div>
+    <div class="unit-row-card">
+        <span class="text-[10px] font-bold text-slate-400">Each</span>
+        <div class="flex items-center gap-3">
+            <button onclick="updateCount('m-val4', -1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-rose-500">-</button>
+            <span id="m-val4" class="font-black text-slate-800 text-sm w-8 text-center swipe-val">0.00</span>
+            <button onclick="updateCount('m-val4', 1)" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-emerald-500">+</button>
+        </div>
+    </div>
+</div>
+
+			<div class="flex justify-between items-center py-2 border-t border-slate-100">
+				<div class="text-center flex-1">
+					<p class="text-[7px] font-black text-slate-400 uppercase">Inventory Value</p>
+					<p class="text-xs font-black text-slate-800">$ 0.00</p>
+				</div>
+				<div class="w-px h-6 bg-slate-100"></div>
+				<div class="text-center flex-1">
+					<p class="text-[7px] font-black text-slate-400 uppercase">Current Count</p>
+					<p id="modal-total-display" class="text-xs font-black text-indigo-600">0.00</p>
+				</div>
+			</div>
+			<button onclick="saveCount()" class="w-full bg-[#4F46E5] text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest text-[11px] active:scale-95 transition-all">Save Count</button>
+		</div>
+	</div>
+	
+	<div id="internal-success-popup" class="hidden absolute inset-0 z-[9999] flex items-center justify-center p-6">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="bg-white w-full max-w-[280px] rounded-[32px] p-8 text-center shadow-2xl relative animate-slide-up">
+        <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-200">
+            <i class="fas fa-check text-2xl text-white"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-800 tracking-tight">Inventory Saved</h3>
+        <p class="text-slate-500 text-[11px] mt-1 font-bold uppercase tracking-wider">Count updated successfully</p>
+        <button onclick="closeInternalSuccess()" class="mt-6 w-full bg-slate-900 text-white py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest active:scale-95 transition-all">Done</button>
+    </div>
+</div>
+      </div>  <!-- IPHONE 17 PRO DIV -->	
+
+		<script>
+			let invChart, daysChart;
+
+			// Sidebar Toggle with FAB visibility fix
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const fab = document.getElementById('paytm-fab');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    sidebar.classList.toggle('closed');
+    overlay.classList.toggle('hidden');
+
+    // Agar sidebar khul raha hai (closed class nahi hai), to FAB hide karo
+    if (!sidebar.classList.contains('closed')) {
+        fab.style.display = 'none';
+    } else {
+        // Sirf Dashboard ya Inventory screen par hi wapas dikhayein
+        const currentScreen = document.querySelector('.screen > div:not(.hidden)').id;
+        if (currentScreen === 'screen-dashboard' || currentScreen === 'screen-inventory') {
+            fab.style.display = 'flex';
+        }
+    }
+}
+
+// Modal Toggle with FAB visibility fix
+function toggleModal() {
+    const modal = document.getElementById('modal-container');
+    const fab = document.getElementById('paytm-fab');
+    const overlay = document.getElementById('modal-overlay');
+
+    modal.classList.toggle('hidden-modal');
+    overlay.classList.toggle('hidden');
+
+    // Agar modal khula hai, to FAB hide karo
+    if (!modal.classList.contains('hidden-modal')) {
+        fab.style.display = 'none';
+    } else {
+        fab.style.display = 'flex';
+    }
+}
+
+			function toggleAccordion(menuId, chevronId) {
+				document.getElementById(menuId).classList.toggle('open');
+				document.getElementById(chevronId).classList.toggle('rotate');
+			}
+
+			function proceedToSuccess() {
+    document.getElementById('modal-container').classList.add('hidden-modal');
+    document.getElementById('success-modal').classList.remove('hidden');
+    // Success modal ke waqt bhi button hide hi rakhein
+    document.getElementById('paytm-fab').style.display = 'none';
+}
+
+function finishAdding() {
+    document.getElementById('success-modal').classList.add('hidden');
+    document.getElementById('modal-overlay').classList.add('hidden');
+    // Finish hone par button wapas dikhayein
+    document.getElementById('paytm-fab').style.display = 'flex';
+    showScreen('storage');
+}
+	// Saare storage locations ka dummy data
+const locationData = {
+    'FRONT OF HOUSE': [
+        { name: "Coke Syrup - 5gal", sku: "BEV-001 | COCA COLA", count: "1.0 Case", value: "$ 85.00", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=300" },
+        { name: "Napkins - 1000ct", sku: "PAP-202 | SYSCO", count: "5.0 Pack", value: "$ 45.50", img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=300" },
+        { name: "Takeaway Bags", sku: "PAP-303 | GFS", count: "2.0 Case", value: "$ 60.00", img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=300" }
+    ],
+    'WALK IN': [
+        { name: "Express Window Box 9x7", sku: "SKU-102938 | SYSCO", count: "4.3 Case", value: "$ 210.5", img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=300" },
+        { name: "Signature Ribeye", sku: "SKU-MEAT-001 | BLUE LINE", count: "4.0 Case", value: "$ 675.60", img: "https://images.unsplash.com/photo-1546248136-3363e7448247?q=80&w=300" },
+        { name: "Heavy Cream 36%", sku: "DAI-1122 | SYSCO", count: "16.0 Qts", value: "$ 87.20", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=300" }
+    ],
+    'Pizza Dress': [
+        { name: "Pepperoni Sliced", sku: "MEAT-442 | GFS", count: "2.5 Bag", value: "$ 112.00", img: "https://images.unsplash.com/photo-1621961458348-f013d219b50c?q=80&w=300" },
+        { name: "Mozzarella Shredded", sku: "DAI-901 | SAPUTO", count: "6.0 Bag", value: "$ 198.00", img: "https://images.unsplash.com/photo-1552767059-ce182ead6c1b?q=80&w=300" },
+        { name: "Pizza Sauce - 6/10", sku: "CAN-009 | STANISLAUS", count: "12.0 Can", value: "$ 72.00", img: "https://images.unsplash.com/photo-1594539829924-f39005927622?q=80&w=300" },
+        { name: "Fresh Basil", sku: "PRO-005 | LOCAL", count: "1.0 Lbs", value: "$ 15.50", img: "https://images.unsplash.com/photo-1618375531912-77ac368ff101?q=80&w=300" }
+    ],
+    'NON-VARIANCE ITEMS': [
+        { name: "Cleaning Solution", sku: "CHEM-101 | ECOLAB", count: "3.0 Gal", value: "$ 45.00", img: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=300" },
+        { name: "Trash Liners 55gal", sku: "MISC-088 | SYSCO", count: "1.0 Case", value: "$ 32.50", img: "https://images.unsplash.com/photo-1591193583851-8785bc5cc2d0?q=80&w=300" },
+        { name: "Hand Soap Refill", sku: "CHEM-202 | ECOLAB", count: "4.0 Bottle", value: "$ 28.00", img: "https://images.unsplash.com/photo-1603501090264-d31221768406?q=80&w=300" }
+    ],
+    'Freezer': [
+        { name: "French Fries - 3/8 Cut", sku: "FRZ-101 | MCCAIN", count: "10.0 Case", value: "$ 340.00", img: "https://images.unsplash.com/photo-1573016605514-42c676798e40?q=80&w=300" },
+        { name: "Chicken Wings - Jumbo", sku: "MEAT-881 | TYSON", count: "3.0 Case", value: "$ 285.00", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?q=80&w=300" },
+        { name: "Ice Cream Mix - Vanilla", sku: "DAI-404 | DAIRYGOLD", count: "5.0 Bag", value: "$ 125.00", img: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?q=80&w=300" },
+        { name: "Frozen Veggie Mix", sku: "FRZ-202 | GFS", count: "2.0 Case", value: "$ 55.00", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?q=80&w=300" }
+    ],
+    'Prep Area': [
+        { name: "Chopped Onions", sku: "PRO-111 | PREP", count: "15.0 Lbs", value: "$ 15.00", img: "https://images.unsplash.com/photo-1508747703725-719777637510?q=80&w=300" },
+        { name: "Minced Garlic", sku: "PRO-222 | PREP", count: "4.0 Qts", value: "$ 28.00", img: "https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?q=80&w=300" }
+    ],
+    'Dry Storage': [
+        { name: "All Purpose Flour - 50lb", sku: "SKU-SYS-102 | AXIONLOG", count: "7.0 Bag", value: "$ 49.00", img: "https://images.unsplash.com/photo-1590333746438-283fd58d9841?q=80&w=300" },
+        { name: "Canola Oil - 35lb", sku: "SKU-445566 | GFS", count: "2.0 JIB", value: "$ 294.70", img: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=300" }
+    ]
+};
+
+function showScreen(screenId, locationName) {
+    // 1. Sidebar aur Overlay ko instantly close karein
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.add('closed');
+    if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+
+    // 2. Saare screens hide karein (New Screen Added here)
+    const screens = ['screen-dashboard', 'screen-inventory', 'screen-storage', 'screen-items-list', 'screen-ingredient-detail', 'screen-variance-detail'];
+    screens.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.classList.add('hidden');
+    });
+    
+    // 3. Target screen dikhayein
+    const targetScreen = document.getElementById('screen-' + screenId);
+    if(targetScreen) targetScreen.classList.remove('hidden');
+
+    // 4. Header management
+    const mainHeader = document.querySelector('header.sticky');
+    const titleElement = document.getElementById('screen-title');
+    
+    // Agar ingredient detail hai toh main header hide karein (kyunki uska apna header hai)
+    if (screenId === 'ingredient-detail') {
+        if(mainHeader) mainHeader.classList.add('hidden');
+    } else {
+        if(mainHeader) mainHeader.classList.remove('hidden');
+        const titles = { 
+            'dashboard': 'ZIP INVENTORY', 
+            'inventory': 'INVENTORY', 
+            'storage': 'DAILY INVENTORY' 
+        };
+        if(titleElement) titleElement.innerText = locationName || titles[screenId] || 'ITEMS LIST';
+    }
+
+    // 5. Agar screenId 'items-list' hai, toh specific items render karein
+    if (screenId === 'items-list' && locationName) {
+        renderLocationItems(locationName);
+    }
+
+    // 6. Navigation Buttons Toggle
+    const hamburger = document.getElementById('hamburger-btn');
+    const backBtn = document.getElementById('back-btn');
+
+    if (['storage', 'items-list'].includes(screenId)) {
+        if(hamburger) hamburger.classList.add('hidden');
+        if(backBtn) {
+            backBtn.classList.remove('hidden');
+            backBtn.onclick = () => showScreen(screenId === 'items-list' ? 'storage' : 'inventory');
+        }
+    } else {
+        if(hamburger) hamburger.classList.remove('hidden');
+        if(backBtn) backBtn.classList.add('hidden');
+    }
+
+    // 7. FAB Visibility
+    const fab = document.getElementById('paytm-fab');
+    if (fab) {
+        fab.style.display = (screenId === 'dashboard' || screenId === 'inventory') ? 'flex' : 'none';
+    }
+}
+
+function openCategoryDetail(categoryName) {
+    // 1. Detail screen ka title set karein
+    const detailTitle = document.getElementById('category-detail-title');
+    if(detailTitle) detailTitle.innerText = categoryName + " Detail";
+    
+    // 2. Data Rendering (Optional: Agar aap chahte hain ki content dynamic ho)
+    // renderIngredientData(categoryName); 
+
+    // 3. Main showScreen function ko call karein
+    // Isse navigation consistent rahegi aur baki screens hide ho jayengi
+    showScreen('ingredient-detail');
+}
+
+// Item list generator function
+function renderLocationItems(loc) {
+    const listContainer = document.getElementById('list-mode');
+    const items = locationData[loc] || [];
+    listContainer.innerHTML = ''; // Purani list clear karein
+
+    items.forEach(item => {
+        const itemHtml = `
+            <div onclick="openCountModal('${item.name}', '${item.sku}', '${item.img}')"
+class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between transition-all active:scale-95">
+
+    <div class="flex-1 pr-2">
+        <p class="text-[12px] font-black text-slate-800 uppercase leading-tight">${item.name}</p>
+        <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${item.sku}</p>
+    </div>
+
+    <div class="text-right">
+        <p class="text-[11px] font-black text-slate-700 leading-none">${item.count}</p>
+        <p class="text-[10px] font-bold text-indigo-600 mt-1">Value: ${item.value}</p>
+    </div>
+
+    <i class="fas fa-chevron-right text-slate-300 ml-4 text-[10px]"></i>
+</div>`;
+toggleListView(false);
+        listContainer.insertAdjacentHTML('beforeend', itemHtml);
+    });
+}
+			function highlightSegment(index) {
+				if (!invChart) return;
+				const values = ["$4,752", "$1,763", "$5,820", "$5,280"];
+				const labels = invChart.data.labels;
+				const labelCat = document.getElementById('center-cat');
+				const labelVal = document.getElementById('center-val');
+				
+				labelCat.innerText = labels[index];
+				labelVal.innerText = values[index];
+				labelVal.style.color = invChart.data.datasets[0].backgroundColor[index];
+				
+				invChart.setActiveElements([{datasetIndex: 0, index: index}]);
+				invChart.update();
+			}
+
+			function switchChart(mode) {
+				const title = document.getElementById('chart-title');
+				const icon = document.getElementById('chart-icon');
+				const invArea = document.getElementById('chart-container');
+				const daysArea = document.getElementById('days-chart-area');
+				const legend = document.getElementById('days-legend');
+				const btnI = document.getElementById('t-inv');
+				const btnD = document.getElementById('t-days');
+
+				if (mode === 'inv') {
+					title.innerText = 'Inventory On Hand';
+					icon.className = 'fas fa-chart-pie text-emerald-500 text-xs';
+					invArea.classList.remove('hidden');
+					daysArea.classList.add('hidden');
+					legend.classList.add('hidden');
+					btnI.classList.replace('inactive', 'active');
+					btnD.classList.replace('active', 'inactive');
+				} else {
+					title.innerText = 'Days On Hand';
+					icon.className = 'fas fa-chart-bar text-blue-500 text-xs';
+					invArea.classList.add('hidden');
+					daysArea.classList.remove('hidden');
+					legend.classList.remove('hidden');
+					btnI.classList.replace('active', 'inactive');
+					btnD.classList.replace('inactive', 'active');
+					if (!daysChart) initDaysChart();
+				}
+			}
+
+			function toggleAllAlerts() {
+				const ids = ['alert-detail-1', 'alert-detail-2', 'alert-detail-3', 'alert-detail-4'];
+				const btn = document.getElementById('view-all-alerts');
+				const isExpanding = document.getElementById(ids[0]).classList.contains('hidden');
+				ids.forEach(id => document.getElementById(id).classList.toggle('hidden', !isExpanding));
+				btn.innerText = isExpanding ? 'Show Less' : 'View All';
+			}
+
+			function toggleNeedingAction() {
+				document.getElementById('extended-tasks').classList.toggle('hidden');
+				document.getElementById('view-all-tasks').innerText = document.getElementById('extended-tasks').classList.contains('hidden') ? 'View All' : 'Show Less';
+			}
+
+			function initDaysChart() {
+				const ctx = document.getElementById('daysChart').getContext('2d');
+				daysChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: ['Tomato', 'Cheese', 'Milk', 'Bread', 'Lettuce', 'Onion'],
+						datasets: [{ label: 'Days Left', data: [1.8, 2.3, 3.1, 3.8, 4.5, 4.6], backgroundColor: '#3B82F6', borderRadius: 6, barThickness: 12 }]
+					},
+					options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9 } } }, y: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' } } } } }
+				});
+			}
+
+			window.onload = function() {
+				const ctx = document.getElementById('inventoryChart').getContext('2d');
+				invChart = new Chart(ctx, {
+					type: 'doughnut',
+					data: {
+						labels: ['Beverage', 'Dairy', 'Cheese', 'Meat'],
+						datasets: [{ data: [27, 10, 33, 30], backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#F43F5E'], borderWidth: 0, cutout: '80%', borderRadius: 8 }]
+					},
+					options: { 
+						responsive: true, 
+						maintainAspectRatio: false, 
+						plugins: { legend: { display: false }, tooltip: { enabled: false } },
+						onHover: (event, elements) => {
+							if (elements.length > 0) {
+								highlightSegment(elements[0].index);
+							} else {
+								document.getElementById('center-cat').innerText = "Total";
+								document.getElementById('center-val').innerText = "$17.6K";
+								document.getElementById('center-val').style.color = "#1e293b";
+							}
+						}
+					}
+				});
+			};
+			function finishAdding() {
+		document.getElementById('success-modal').classList.add('hidden');
+		document.getElementById('modal-overlay').classList.add('hidden');
+		
+		// showScreen will now handle closing the sidebar and showing the FAB correctly
+		showScreen('storage'); 
+	}
+
+	function toggleListView(isList) {
+    const listMode = document.getElementById('list-mode');
+    const swipeMode = document.getElementById('swipe-mode');
+    const searchCont = document.getElementById('search-container');
+    const btnList = document.getElementById('btn-list-view');
+    const btnSwipe = document.getElementById('btn-swipe-view');
+
+    if (isList) {
+        // LIST VIEW logic
+        listMode.classList.remove('hidden');
+        swipeMode.classList.add('hidden');
+        swipeMode.style.display = 'none';
+        searchCont.classList.remove('hidden'); // List view mein search dikhega
+        btnList.className = 'toggle-option active';
+        btnSwipe.className = 'toggle-option inactive';
+    } else {
+        // SWIPE VIEW logic (Default)
+        listMode.classList.add('hidden');
+        swipeMode.classList.remove('hidden');
+        swipeMode.style.display = 'flex';
+        searchCont.classList.add('hidden'); // Swipe view mein search hide rahega
+        btnSwipe.className = 'toggle-option active';
+        btnList.className = 'toggle-option inactive';
+
+        // Reset swipe animation state
+        const card = document.getElementById('swipe-card-container');
+        if (card) {
+            card.style.transform = 'translateX(0)';
+            card.style.opacity = '1';
+        }
+    }
+}
+
+	// 1. Updated Voice Search Logic (Fixes the ReferenceError)
+	function startVoiceSearch() {
+		const searchInput = document.getElementById('item-search-input');
+		const voiceBtn = document.getElementById('voice-search-btn');
+		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		
+		if (!SpeechRecognition) {
+			alert("Aapka browser voice search support nahi karta.");
+			return;
+		}
+
+		const recognition = new SpeechRecognition();
+		recognition.lang = 'en-US';
+
+		recognition.onstart = () => {
+			voiceBtn.style.color = '#ef4444'; // Recording indicator
+			searchInput.placeholder = "Listening...";
+		};
+
+		// YAHAN FIX HAI: Handler ab function ke andar hai
+		recognition.onresult = (event) => {
+			const transcript = event.results[0][0].transcript;
+			searchInput.value = transcript;
+			filterItemsList(); // Real-time search trigger
+			voiceBtn.style.color = '#64748b';
+			searchInput.placeholder = "Search name or SKU...";
+		};
+
+		recognition.onerror = () => {
+			voiceBtn.style.color = '#64748b';
+			searchInput.placeholder = "Try again...";
+		};
+
+		recognition.start();
+	}
+
+
+
+	function filterItemsList() {
+		// 1. Input value ko pakdein aur lowercase karein
+		const query = document.getElementById('item-search-input').value.toLowerCase();
+		
+		// 2. Saare item cards ko select karein
+		const itemCards = document.querySelectorAll('#list-mode > div');
+
+		itemCards.forEach(card => {
+			// 3. Card ke andar se Name aur SKU text nikalein
+			const itemName = card.querySelector('p:first-child').innerText.toLowerCase();
+			const itemSKU = card.querySelector('p:nth-child(2)').innerText.toLowerCase();
+
+			// 4. Agar query match hoti hai toh dikhayein, nahi toh hide karein
+			if (itemName.includes(query) || itemSKU.includes(query)) {
+				card.style.display = "flex";
+			} else {
+				card.style.display = "none";
+			}
+		});
+	}
+
+	// Modal Trigger logic
+	console.log("Modal opening...");
+	function openCountModal(name, sku, img) {
+
+    console.log("Modal opening...");
+
+    document.getElementById("modal-item-name").innerText = name;
+    document.getElementById("modal-item-sku").innerText = sku;
+
+    if(img){
+        document.getElementById("modal-item-img").src = img;
+    }
+
+    const sheet = document.getElementById("count-bottom-sheet");
+
+    sheet.classList.remove("hidden");
+
+    setTimeout(() => {
+        sheet.classList.remove("translate-y-full");
+    }, 10);
+}
+
+
+
+
+
+
+	function closeCountModal() {
+		const modal = document.getElementById('count-bottom-sheet');
+		const overlay = document.getElementById('count-modal-overlay');
+
+		if (!modal || !overlay) return;
+
+		// Animation trigger
+		modal.style.transform = 'translateY(100%)';
+		overlay.style.opacity = '0';
+
+		// Click block hone se bachane ke liye timeout se pehle events disable karein
+		modal.style.pointerEvents = 'none'; 
+
+		setTimeout(() => {
+			modal.classList.add('hidden');
+			overlay.classList.add('hidden');
+			overlay.style.display = 'none';
+			modal.style.pointerEvents = 'auto'; // Reset for next time
+		}, 300);
+	}
+
+	function saveCount() {
+		// Save logic yahan aayega
+		alert("Count Saved Successfully!");
+		closeCountModal();
+	}
+
+	// Data with Real Images and Multiple Units
+// Sabhi items ka complete data units aur images ke saath
+const inventoryItems = [
+    { 
+        name: "Coke Syrup - 5gal", 
+        sku: "BEV-001 | COCA COLA", 
+        count: "1.0 Case", 
+        value: "$ 85.00", 
+        img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=300",
+        units: ["Case (5gal)", "Gallon", "Qts"]
+    },
+    { 
+        name: "Napkins - 1000ct", 
+        sku: "PAP-202 | SYSCO", 
+        count: "5.0 Pack", 
+        value: "$ 45.50", 
+        img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=300",
+        units: ["Case (10pk)", "Pack (1000ct)", "Each"]
+    },
+    { 
+        name: "Express Window Box 9x7", 
+        sku: "SKU-102938 | SYSCO", 
+        count: "4.3 Case(s)", 
+        value: "$ 210.5", 
+        img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=300",
+        units: ["Bale (100ea)", "Pack (10ea)", "Each"]
+    },
+    { 
+        name: "SignatureRibeye", 
+        sku: "SKU-MEAT-001 | BLUE LINE", 
+        count: "4.0 Case(s)", 
+        value: "$ 675.60", 
+        img: "https://images.unsplash.com/photo-1546248136-3363e7448247?q=80&w=300",
+        units: ["Case (2ea)", "Lbs", "Kgs"]
+    },
+    { 
+        name: "All Purpose Flour - 50lb", 
+        sku: "SKU-SYS-102 | AXIONLOG", 
+        count: "7.0 Bag", 
+        value: "$ 49.00", 
+        img: "https://images.unsplash.com/photo-1590333746438-283fd58d9841?q=80&w=300",
+        units: ["Bag (50lb)", "Lbs", "Cups"]
+    },
+    { 
+        name: "Canola Oil - 35lb", 
+        sku: "SKU-445566 | GFS", 
+        count: "2.0 JIB", 
+        value: "$ 294.70", 
+        img: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=300",
+        units: ["JIB (35lb)", "Gallon", "Liters"]
+    }
+];
+
+
+
+	let currentSwipeIndex = 0;
+
+	function changeSwipeItem(direction) {
+		currentSwipeIndex = (currentSwipeIndex + direction + inventoryItems.length) % inventoryItems.length;
+		const item = inventoryItems[currentSwipeIndex];
+		
+		// 1. Index Fix (e.g., 1/19 format)
+		const totalItemsInLocation = 6; // Aap ise dynamic bhi kar sakte hain
+		document.getElementById('swipe-item-count').innerText = `${currentSwipeIndex + 1}/${totalItemsInLocation}`;
+		
+		// 2. Update Details
+		document.getElementById('swipe-item-name').innerText = item.name;
+		document.getElementById('swipe-item-img').src = item.img;
+		
+		// 3. Reset counts for new item
+		clearCounts();
+	}
+
+
+function saveAndNext() {
+    const card = document.getElementById('swipe-card-container');
+    
+    // 1. Swipe Out Animation (Left)
+    card.style.transform = 'translateX(-120%)';
+    card.style.opacity = '0';
+
+    setTimeout(() => {
+        // 2. Data Update (Next Item)
+        // Global currentSwipeIndex ko update karein
+        currentSwipeIndex = (currentSwipeIndex + 1) % inventoryItems.length;
+        const item = inventoryItems[currentSwipeIndex];
+
+        // UI update karein
+        document.getElementById('swipe-item-name').innerText = item.name;
+        document.getElementById('swipe-item-img').src = item.img;
+        document.getElementById('swipe-item-count').innerText = `${currentSwipeIndex + 1}/19`;
+
+        // 3. Clear counts for fresh entry
+        document.querySelectorAll('.swipe-val').forEach(el => el.innerText = "0.00");
+        document.getElementById('swipe-total-display').innerText = "0.00";
+        document.getElementById('swipe-value-display').innerText = "$ 0.00";
+
+        // 4. Reset position for Incoming Animation (Right side se)
+        card.style.transition = 'none';
+        card.style.transform = 'translateX(120%)';
+        
+        // 5. Swipe In Animation
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transform = 'translateX(0)';
+            card.style.opacity = '1';
+        }, 50);
+    }, 300);
+}
+
+// Global Update Count (Common for Modal and Swipe)
+function updateCount(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    let val = parseFloat(el.innerText);
+    val = Math.max(0, val + delta);
+    el.innerText = val.toFixed(2);
+    
+    // Auto calculate based on which screen is active
+    calculateLiveTotals();
+}
+
+function calculateLiveTotals() {
+    let totalCount = 0;
+    // Find all visible count values
+    document.querySelectorAll('.swipe-val').forEach(el => {
+        totalCount += parseFloat(el.innerText);
+    });
+
+    // Update Swipe View Displays
+    const swipeTotal = document.getElementById('swipe-total-display');
+    const swipeValue = document.getElementById('swipe-value-display');
+    if (swipeTotal) swipeTotal.innerText = totalCount.toFixed(2);
+    if (swipeValue) swipeValue.innerText = `$ ${(totalCount * 48.5).toFixed(2)}`; // Example price
+
+    // Update Modal Displays (if open)
+    const modalTotal = document.getElementById('modal-total-display');
+    if (modalTotal) modalTotal.innerText = totalCount.toFixed(2);
+}
+
+function saveCount() {
+    // Bottom sheet ko hide karein
+    closeCountModal();
+    
+    // Internal popup dikhayein
+    const popup = document.getElementById('internal-success-popup');
+    popup.classList.remove('hidden');
+}
+
+function closeInternalSuccess() {
+    const popup = document.getElementById('internal-success-popup');
+    popup.classList.add('hidden');
+}
+
+	function clearCounts() {
+		document.querySelectorAll('.swipe-val').forEach(el => el.innerText = "0.00");
+		document.getElementById('live-total-display').innerText = "0.00";
+	}
+	function openPreviewModal(name, img = null) {
+
+	  const titleEl = document.getElementById("preview-title");
+	  const imageEl = document.getElementById("preview-img");
+	  const modalEl = document.getElementById("item-preview-modal");
+
+	  // Safety checks
+	  if (!modalEl) {
+		console.error("Modal not found!");
+		return;
+	  }
+
+	  if (titleEl) {
+		titleEl.innerText = name;
+	  }
+
+	  if (imageEl) {
+		imageEl.src = img || "https://via.placeholder.com/150";
+	  }
+
+	  // Show modal
+	  modalEl.classList.remove("hidden");
+	}
+
+
+	function closePreviewModal() {
+	  document
+		.getElementById("item-preview-modal")
+		.classList.add("hidden");
+	}
+	
+
+	window.openCountModal = function(name, sku, img) {
+
+	  console.log("Modal opening...");
+
+	  const modal = document.getElementById('count-bottom-sheet');
+	  const overlay = document.getElementById('count-modal-overlay');
+
+	  const nameEl = document.getElementById('modal-item-name');
+	  const skuEl = document.getElementById('modal-item-sku');
+	  const imgEl = document.getElementById("modal-item-img");
+
+	  if (nameEl) nameEl.innerText = name;
+	  if (skuEl) skuEl.innerText = sku;
+	  if (imgEl && img) imgEl.src = img;
+
+	  if (!modal || !overlay) return;
+
+	  // 👇 FORCE VISIBLE
+	  overlay.classList.remove('hidden');
+	  modal.classList.remove('hidden');
+
+	  overlay.style.display = "block";
+	  modal.style.display = "flex";
+
+	  // 👇 bring to front
+	  overlay.style.zIndex = "3000";
+	  modal.style.zIndex = "3001";
+
+	  // 👇 reset transform if stuck off-screen
+	  modal.style.transform = "translateY(0)";
+	};
+
+let currentFilter = 'all';
+
+function toggleFilterMenu() {
+    const menu = document.getElementById('filter-menu');
+    menu.classList.toggle('hidden');
+}
+
+function applyFilter(filterType) {
+    currentFilter = filterType;
+    document.getElementById('filter-menu').classList.add('hidden'); // Close menu
+    filterItemsList(); // Refresh list
+}
+
+// Updated filter logic to support the icon menu
+function filterItemsList() {
+    const query = document.getElementById('item-search-input').value.toLowerCase();
+    const locationTitle = document.getElementById('screen-title').innerText;
+    
+    const items = locationData[locationTitle] || [];
+    const listContainer = document.getElementById('list-mode');
+    listContainer.innerHTML = '';
+    
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const matchesSearch = item.name.toLowerCase().includes(query) || item.sku.toLowerCase().includes(query);
+        const matchesFilter = currentFilter === 'all' || 
+                             (currentFilter === 'counted' && item.status === 'counted') || 
+                             (currentFilter === 'uncounted' && item.status === 'uncounted');
+
+        if (matchesSearch && matchesFilter) {
+            visibleCount++;
+            const itemHtml = `
+                <div onclick="openCountModal('${item.name}', '${item.sku}', '${item.img}')"
+class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between transition-all active:scale-95">
+
+    <div class="flex-1 pr-2">
+        <p class="text-[12px] font-black text-slate-800 uppercase leading-tight">${item.name}</p>
+        <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${item.sku}</p>
+    </div>
+
+    <div class="text-right">
+        <p class="text-[11px] font-black text-slate-700 leading-none">${item.count}</p>
+        <p class="text-[10px] font-bold text-indigo-600 mt-1">Value: ${item.value}</p>
+    </div>
+
+    <i class="fas fa-chevron-right text-slate-300 ml-4 text-[10px]"></i>
+</div>`;
+            listContainer.insertAdjacentHTML('beforeend', itemHtml);
+        }
+    });
+    
+    document.getElementById('result-count').innerText = `${visibleCount} Items Found`;
+}
+
+function toggleCalendarModal(show) {
+    const modal = document.getElementById('calendar-modal');
+    if (show) {
+        modal.classList.remove('hidden');
+    } else {
+        modal.classList.add('hidden');
+    }
+}
+
+function applyDashboardDate() {
+    const dateInput = document.getElementById('calendar-input').value;
+    if (dateInput) {
+        // Format date from YYYY-MM-DD to DD-MM-YYYY
+        const [year, month, day] = dateInput.split('-');
+        const formattedDate = `${day}-${month}-${year}`;
+        
+        // Update display on dashboard
+        document.getElementById('dashboard-date-display').innerText = formattedDate;
+        
+        // Close modal
+        toggleCalendarModal(false);
+        
+        // Visual feedback (optional)
+        console.log("Date updated to: " + formattedDate);
+    }
+}
+
+function switchStorageTab(mode) {
+    const countTab = document.getElementById('tab-item-count');
+    const varTab = document.getElementById('tab-variance-report');
+    const countList = document.getElementById('storage-count-list');
+    const varList = document.getElementById('storage-variance-list');
+    const sortBtn = document.getElementById('sort-trigger');
+
+    if (mode === 'count') {
+        countTab.className = 'tab-btn active';
+        varTab.className = 'tab-btn inactive';
+        countList.classList.remove('hidden');
+        varList.classList.add('hidden');
+        sortBtn.classList.add('hidden');
+    } else {
+        countTab.className = 'tab-btn inactive';
+        varTab.className = 'tab-btn active';
+        countList.classList.add('hidden');
+        varList.classList.remove('hidden');
+        sortBtn.classList.remove('hidden');
+    }
+}
+
+function toggleSortModal(show) {
+    const modal = document.getElementById('sort-modal');
+    const container = document.getElementById('sort-modal-container');
+    if (show) {
+        modal.classList.remove('hidden');
+        setTimeout(() => container.style.transform = 'translateY(0)', 10);
+    } else {
+        container.style.transform = 'translateY(100%)';
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+}
+
+function toggleDateModal(show) {
+    const modal = document.getElementById('date-modal');
+    const overlay = document.getElementById('date-modal-overlay');
+    if (show) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('open'), 10);
+    } else {
+        modal.classList.remove('open');
+        setTimeout(() => overlay.classList.add('hidden'), 400);
+    }
+}
+
+function applyDateRange() {
+    const start = new Date(document.getElementById('start-date').value);
+    const end = new Date(document.getElementById('end-date').value);
+    
+    const options = { month: 'short', day: '2-digit' };
+    const rangeText = `${start.toLocaleDateString('en-US', options).toUpperCase()} - ${end.toLocaleDateString('en-US', options).toUpperCase()}`;
+    
+    document.getElementById('display-date-range').innerText = rangeText;
+    toggleDateModal(false);
+    // Yahan aap list ko refresh karne ka function call kar sakte hain
+}
+
+function toggleFilterModal(show) {
+    const modal = document.getElementById('filter-modal');
+    const overlay = document.getElementById('filter-modal-overlay');
+    if (show) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('open'), 10);
+    } else {
+        modal.classList.remove('open');
+        setTimeout(() => overlay.classList.add('hidden'), 400);
+    }
+}
+
+function selectChip(el, group) {
+    document.querySelectorAll(`.${group}-chip`).forEach(chip => chip.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+function applyFilters() {
+    // Logic to filter the inventory list based on selected chips
+    toggleFilterModal(false);
+    alert('Filters Applied!');
+}
+
+function resetFilters() {
+    document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected'));
+    document.querySelector('.freq-chip').classList.add('selected');
+    document.querySelector('.status-chip').classList.add('selected');
+}
+function toggleAlert(alertId) {
+    const detail = document.getElementById(alertId);
+    
+    // Optional: Dusre saare open alerts ko band karne ke liye (Accordion effect)
+    /* const allDetails = ['alert-detail-1', 'alert-detail-2', 'alert-detail-3', 'alert-detail-4'];
+    allDetails.forEach(id => {
+        if(id !== alertId) document.getElementById(id).classList.add('hidden');
+    });
+    */
+
+    // Current alert toggle karein
+    detail.classList.toggle('hidden');
+}
+
+// "View All" button ke liye purana logic update karein
+function toggleAllAlerts() {
+    const ids = ['alert-detail-1', 'alert-detail-2', 'alert-detail-3', 'alert-detail-4'];
+    const isExpanding = document.getElementById(ids[0]).classList.contains('hidden');
+    
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (isExpanding) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+    
+    document.getElementById('view-all-alerts').innerText = isExpanding ? 'Show Less' : 'View All';
+}
+
+function openVarianceReport(itemName, data) {
+    const reportScreen = document.getElementById('screen-variance-detail');
+    const nameEl = document.getElementById('var-report-item-name');
+
+    // Check karein ki element null toh nahi hai
+    if (!reportScreen || !nameEl) {
+        console.error("Error: Screen or Name element not found in HTML!");
+        return;
+    }
+
+    // Data set karein
+    nameEl.innerText = itemName;
+    if(document.getElementById('det-unit')) document.getElementById('det-unit').innerText = data.unit;
+    if(document.getElementById('det-actual')) document.getElementById('det-actual').innerText = data.actual;
+    if(document.getElementById('det-ideal')) document.getElementById('det-ideal').innerText = data.ideal;
+    if(document.getElementById('det-var-qty')) document.getElementById('det-var-qty').innerText = data.variance;
+    if(document.getElementById('det-var-dol')) document.getElementById('det-var-dol').innerText = data.varDol;
+
+    
+	// Screen change karein
+    showScreen('variance-detail');
+}	
+
+function toggleVarSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+}
+
+function toggleAllVarianceSections() {
+    const sections = ['sect-ideal', 'sect-supplier', 'sect-open', 'sect-close'];
+    const btn = document.getElementById('view-all-variance');
+    const isExpanding = document.getElementById(sections[0]).classList.contains('hidden');
+    
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (isExpanding) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+    
+    btn.innerText = isExpanding ? 'Show Less' : 'View All';
+}
+
+</script>
+		
+	
+	</body>
+	</html>
